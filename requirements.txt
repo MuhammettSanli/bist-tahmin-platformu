@@ -31,3 +31,4 @@ apscheduler
 
 # Ortam değişkenleri
 python-dotenv
+gunicorn

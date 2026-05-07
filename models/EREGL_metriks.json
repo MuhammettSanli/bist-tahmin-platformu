@@ -1,0 +1,64 @@
+{
+  "hisse_kodu": "EREGL",
+  "en_iyi_esik": 0.005,
+  "en_iyi_tip": "finansal",
+  "en_iyi_algo": "lgbm",
+  "sadece_finansal": {
+    "accuracy": 0.544643,
+    "f1": 0.37037,
+    "f1_macro": 0.506864,
+    "esik": 0.5,
+    "algoritma": "lgbm",
+    "wf": {
+      "wf_acc_ort": 0.524429,
+      "wf_f1_ort": 0.497151,
+      "wf_acc_std": 0.013728,
+      "wf_f1_std": 0.097721,
+      "wf_katlar": 3,
+      "wf_detay": [
+        {
+          "acc": 0.5361,
+          "f1": 0.6154
+        },
+        {
+          "acc": 0.5052,
+          "f1": 0.5
+        },
+        {
+          "acc": 0.5321,
+          "f1": 0.3761
+        }
+      ]
+    }
+  },
+  "hibrit": {
+    "accuracy": 0.491071,
+    "f1": 0.24,
+    "f1_macro": 0.428725,
+    "esik": 0.5,
+    "algoritma": "lgbm",
+    "wf": {
+      "wf_acc_ort": 0.521918,
+      "wf_f1_ort": 0.491086,
+      "wf_acc_std": 0.026166,
+      "wf_f1_std": 0.072775,
+      "wf_katlar": 3,
+      "wf_detay": [
+        {
+          "acc": 0.5155,
+          "f1": 0.3896
+        },
+        {
+          "acc": 0.5567,
+          "f1": 0.5567
+        },
+        {
+          "acc": 0.4936,
+          "f1": 0.5269
+        }
+      ]
+    }
+  },
+  "iyilesme_acc": -0.053572,
+  "iyilesme_f1": -0.078139
+}

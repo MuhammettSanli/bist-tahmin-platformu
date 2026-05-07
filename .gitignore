@@ -1,11 +1,6 @@
-# Veritabanı (büyük dosya, veriler yerel kalır)
-borsa.db
-
-# Eğitilmiş modeller (büyük dosyalar)
-models/
-
 # twscrape hesap veritabanı (kimlik bilgisi içerir)
-*.db
+accounts.db
+bist_data.db
 accounts.txt
 
 # Python
