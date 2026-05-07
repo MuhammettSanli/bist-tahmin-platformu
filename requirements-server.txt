@@ -1,0 +1,27 @@
+# Sunucu gereksinimleri (torch/transformers/telethon yok — sadece Flask + tahmin)
+
+# Finansal Veri
+yfinance
+
+# Web Scraping (haber RSS için)
+requests
+beautifulsoup4
+lxml
+
+# Makine Öğrenmesi
+xgboost
+lightgbm
+scikit-learn
+pandas
+pandas_ta
+numpy
+joblib
+
+# Web Arayüzü
+flask
+flask-cors
+apscheduler
+
+# Ortam değişkenleri
+python-dotenv
+gunicorn
