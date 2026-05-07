@@ -1,0 +1,42 @@
+# Veritabanı (büyük dosya, veriler yerel kalır)
+borsa.db
+
+# Eğitilmiş modeller (büyük dosyalar)
+models/
+
+# twscrape hesap veritabanı (kimlik bilgisi içerir)
+*.db
+accounts.txt
+
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+.pytest_cache/
+
+# Sanal ortam
+venv/
+env/
+.venv/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Ortam değişkenleri (API anahtarları)
+.env
+
+# Telegram oturum dosyaları (hesap erişimi içerir)
+*.session
+*.session-journal
+
+# Log dosyaları
+logs/
+
+# Claude Code ayarları (kişisel)
+.claude/

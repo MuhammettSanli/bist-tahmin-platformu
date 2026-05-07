@@ -1,0 +1,33 @@
+# Finansal Veri
+yfinance
+
+# Web Scraping
+requests
+beautifulsoup4
+lxml
+cloudscraper   # Cloudflare bypass
+
+# Alternatif veri kaynakları
+telethon       # Telegram kanal/grup scraping
+pykap          # KAP (Kamuyu Aydınlatma Platformu) API wrapper
+
+# NLP / BERT
+transformers
+torch
+
+# Makine Öğrenmesi
+xgboost
+lightgbm
+scikit-learn
+pandas
+pandas_ta
+numpy
+joblib
+
+# Web Arayüzü
+flask
+flask-cors
+apscheduler
+
+# Ortam değişkenleri
+python-dotenv

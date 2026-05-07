@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>BIST Tahmin Platformu</title>
+  <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
+  <link rel="stylesheet" href="/static/style.css?v=2" />
+</head>
+<body>
+
+  <header>
+    <h1>BIST Borsa Tahmin Platformu</h1>
+    <p>Finansal Veriler + Duygu Analizi (BERT) + XGBoost / LightGBM ile Fiyat Yönü Tahmini</p>
+    <div class="header-guncelle">
+      <span id="sonGuncellemeLabel" class="son-guncelleme-label"></span>
+      <button id="veriGuncelleBtn" class="guncelle-btn" onclick="veriGuncelle()">↓ Veri Güncelle</button>
+      <button id="modelEgitBtn" class="guncelle-btn guncelle-btn--model" onclick="modelEgit()">⚙ Modeli Eğit</button>
+    </div>
+  </header>
+
+  <main>
+
+    <!-- Hisse Seçici -->
+    <section class="controls">
+      <label for="hisseSelect">Hisse Senedi:</label>
+      <select id="hisseSelect"></select>
+      <button id="analizBtn">Analiz Et</button>
+    </section>
+
+    <!-- Tahmin Kutusu -->
+    <section id="tahminKutu" class="tahmin-kutu gizli">
+      <div class="tahmin-yon" id="tahminYon">—</div>
+      <div class="tahmin-model-badges" id="tahminBadges"></div>
+      <div class="tahmin-detay">
+        <span id="tahminGuven"></span>
+        <span id="tahminKapanis"></span>
+        <span id="tahminDuygu"></span>
+        <span id="tahminTarih"></span>
+      </div>
+    </section>
+
+    <!-- Fiyat + Hacim Grafiği -->
+    <section class="grafik-kart">
+      <h2>Fiyat Grafiği — Son 90 Gün (Mum Grafiği + Hacim)</h2>
+      <div id="fiyatGrafik" class="plotly-grafik"></div>
+    </section>
+
+    <!-- Duygu Skoru Grafiği -->
+    <section class="grafik-kart">
+      <div class="grafik-kart__baslik-satir">
+        <h2>Duygu Skoru (BERT Analizi)</h2>
+        <div class="periyot-toggle" id="periyotToggle">
+          <button class="toggle-btn toggle-btn--aktif" data-periyot="gunluk">Günlük</button>
+          <button class="toggle-btn" data-periyot="haftalik">Haftalık</button>
+          <button class="toggle-btn" data-periyot="aylik">Aylık</button>
+        </div>
+      </div>
+      <div id="duyguGrafik" class="plotly-grafik plotly-grafik--kisa"></div>
+    </section>
+
+    <!-- Sinyal Geçmişi -->
+    <section id="sinyalPanel" class="grafik-kart gizli">
+      <h2>Son 30 Gün — Tahmin Geçmişi</h2>
+      <div id="sinyalOzet" class="sinyal-ozet"></div>
+      <div id="sinyalTablo" class="sinyal-tablo-wrap"></div>
+    </section>
+
+    <!-- Model Karşılaştırma + Walk-Forward -->
+    <section id="karsilastirmaPanel" class="karsilastirma-panel gizli">
+      <h2>Model Karşılaştırması</h2>
+      <p class="panel-aciklama">
+        Duygu analizinin tahmin doğruluğuna katkısı — aynı hisse, iki farklı model
+      </p>
+      <div class="karsilastirma-kartlar">
+
+        <div class="model-kart model-kart--finansal">
+          <div class="model-kart__baslik">Sadece Finansal Model</div>
+          <div class="model-kart__altyazi">Fiyat + Hacim + Teknik Göstergeler</div>
+          <div class="model-kart__metrik">
+            <span class="metrik-etiket">Doğruluk (HoldOut)</span>
+            <span class="metrik-deger" id="finAcc">—</span>
+          </div>
+          <div class="model-kart__metrik">
+            <span class="metrik-etiket">F1 Skoru</span>
+            <span class="metrik-deger" id="finF1">—</span>
+          </div>
+          <div class="model-kart__metrik">
+            <span class="metrik-etiket">Walk-Forward Doğruluk</span>
+            <span class="metrik-deger metrik-deger--kucuk" id="finWfAcc">—</span>
+          </div>
+        </div>
+
+        <div class="model-kart__ok">→</div>
+
+        <div class="model-kart model-kart--hibrit">
+          <div class="model-kart__baslik">Hibrit Model</div>
+          <div class="model-kart__altyazi">Finansal + BERT Duygu Analizi</div>
+          <div class="model-kart__metrik">
+            <span class="metrik-etiket">Doğruluk (HoldOut)</span>
+            <span class="metrik-deger" id="hibAcc">—</span>
+          </div>
+          <div class="model-kart__metrik">
+            <span class="metrik-etiket">F1 Skoru</span>
+            <span class="metrik-deger" id="hibF1">—</span>
+          </div>
+          <div class="model-kart__metrik">
+            <span class="metrik-etiket">Walk-Forward Doğruluk</span>
+            <span class="metrik-deger metrik-deger--kucuk" id="hibWfAcc">—</span>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- İyileşme Bandı -->
+      <div id="iyilesmeBand" class="iyilesme-band gizli">
+        Duygu analizi modeli doğruluğu
+        <strong id="iyilesmeYuzde"></strong> artırdı
+      </div>
+
+      <!-- Walk-Forward Detay -->
+      <div id="wfDetayPanel" class="wf-detay-panel gizli">
+        <div class="wf-baslik">Walk-Forward Validation Detayı
+          <span class="wf-aciklama">(zamana göre ileri yuvarlanan 3 test penceresi)</span>
+        </div>
+        <div id="wfKatlar" class="wf-katlar"></div>
+      </div>
+
+    </section>
+
+    <!-- Feature Importance Grafiği -->
+    <section id="onemPanel" class="grafik-kart gizli">
+      <h2>Özellik Önemi (XGBoost — İlk 20)</h2>
+      <div id="onemGrafik" class="plotly-grafik plotly-grafik--orta"></div>
+    </section>
+
+    <!-- Backtest Paneli (hisse bazlı) -->
+    <section id="backtestPanel" class="grafik-kart gizli">
+      <h2>Backtest — Holdout Dönemi (Eki 2025 → Nis 2026)</h2>
+      <div id="backtestMetrikler" class="sinyal-ozet"></div>
+      <div id="backtestGrafik" class="plotly-grafik plotly-grafik--kisa" style="margin-top:12px"></div>
+    </section>
+
+    <!-- Tüm Hisseler Backtest Özeti -->
+    <section id="backtestOzetPanel" class="grafik-kart">
+      <h2>Tüm Hisseler — Backtest Özeti (Strateji vs BIST100)</h2>
+      <p class="panel-aciklama">Holdout dönemi Eki 2025 → Nis 2026 · Long-only strateji · BIST100 buy&amp;hold benchmark · Türk risksiz faiz %35/yıl dahil</p>
+      <div id="backtestOzetTablo" class="sinyal-tablo-wrap"></div>
+    </section>
+
+    <!-- Tüm Hisseler Özet Tablosu -->
+    <section id="tumHisselerPanel" class="grafik-kart">
+      <h2>Tüm Hisseler — Model Performansı</h2>
+      <div id="tumHisselerTablo" class="sinyal-tablo-wrap"></div>
+    </section>
+
+  </main>
+
+  <!-- Şifre Modalı -->
+  <div id="loginModal" class="login-modal-overlay gizli">
+    <div class="login-modal">
+      <div class="login-modal__baslik">Yönetici Girişi</div>
+      <div class="login-modal__aciklama" id="loginAciklama">Bu işlem için şifre gerekli.</div>
+      <input type="password" id="loginSifre" class="login-modal__input" placeholder="Şifre" />
+      <div class="login-modal__hatamesaj gizli" id="loginHata"></div>
+      <div class="login-modal__butonlar">
+        <button class="login-modal__iptal" onclick="loginIptal()">İptal</button>
+        <button class="login-modal__giris" onclick="loginGonder()">Giriş</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="/static/script.js?v=7"></script>
+</body>
+</html>
