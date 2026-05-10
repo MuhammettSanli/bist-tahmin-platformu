@@ -1,6 +1,7 @@
 # twscrape hesap veritabanı (kimlik bilgisi içerir)
 accounts.db
 bist_data.db
+borsa.db
 accounts.txt
 
 # Python
