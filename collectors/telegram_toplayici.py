@@ -80,7 +80,11 @@ HISSE_KANALLARI = {
         "kcholhissem",           # Koc holding hisse birligi - 561 uye
     ],
     "EREGL": [
-        "ereglhisse",         # Dogrulandi - 6.594 uye (Erdemir Eregli Hisse)
+        "ereglhisse",         # Erdemir Eregli Hisse - 6.594 uye
+        "Ereglihisse",        # Eregli Demir Celik Hisse - 1.045 uye
+        "hisseeregli",        # Eregli hisse kanali
+        "ereglhissem",        # Eregli hisse birlik kanali
+        "eregli_kardemir",    # Eregl + Kardemir birlesik kanal
     ],
     "TUPRS": [
         "tuprs_hisse",        # Tupras Hisse - 9.965 uye
