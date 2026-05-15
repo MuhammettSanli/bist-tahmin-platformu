@@ -23,16 +23,14 @@ _sys.path.insert(0, _os.path.dirname(_os.path.dirname(_os.path.abspath(__file__)
 
 
 import asyncio
+import io
 import os
 import random
+import re
 import sqlite3
 import sys
-import io
-import re
-import torch
 from datetime import datetime, timedelta
 from pathlib import Path
-from transformers import AutoTokenizer, AutoModelForSequenceClassification
 from telethon import TelegramClient
 from telethon.tl.types import Message
 from telethon.errors import FloodWaitError, ChannelPrivateError
@@ -130,8 +128,8 @@ GENEL_KANALLAR = [
 BERT_MODEL = "savasy/bert-base-turkish-sentiment-cased"
 
 # Bekleme araliklari (saniye)
-BEKLEME_MESAJ   = (0.3, 1.0)
-BEKLEME_KANAL   = (1, 3)
+BEKLEME_MESAJ   = (0.05, 0.2)
+BEKLEME_KANAL   = (0.5, 1.5)
 BEKLEME_FLOOD   = (30, 90)
 
 
@@ -204,7 +202,6 @@ def mesaj_kaydet(conn: sqlite3.Connection, tweet_id: str, hisse_kodu: str,
 
 async def kanal_isle(client: TelegramClient, kanal_adi: str,
                      hisse_kodu: str, hisse_filtre: bool,
-                     tokenizer, model, device: str,
                      conn: sqlite3.Connection,
                      baslangic: datetime) -> int:
     """
@@ -253,12 +250,9 @@ async def kanal_isle(client: TelegramClient, kanal_adi: str,
             tweet_id = f"tg_{kanal_adi}_{mesaj.id}"
             tarih_str = mesaj.date.strftime("%Y-%m-%d %H:%M:%S")
 
-            skor = duygu_skoru_hesapla(temiz, tokenizer, model, device)
-
-            if mesaj_kaydet(conn, tweet_id, hisse_kodu, tarih_str, temiz, skor):
+            if mesaj_kaydet(conn, tweet_id, hisse_kodu, tarih_str, temiz, None):
                 kaydedilen += 1
-                print(f"      [{kaydedilen:3d}] {tarih_str[:10]}  "
-                      f"Skor:{skor:+.3f}  {temiz[:50]}")
+                print(f"      [{kaydedilen:3d}] {tarih_str[:10]}  {temiz[:60]}")
 
             await asyncio.sleep(random.uniform(*BEKLEME_MESAJ))
 
@@ -273,7 +267,6 @@ async def kanal_isle(client: TelegramClient, kanal_adi: str,
 
 
 async def hisse_isle(client: TelegramClient, hisse_kodu: str,
-                     tokenizer, model, device: str,
                      conn: sqlite3.Connection,
                      baslangic: datetime) -> int:
     kanallar = HISSE_KANALLARI.get(hisse_kodu, [])
@@ -281,26 +274,22 @@ async def hisse_isle(client: TelegramClient, hisse_kodu: str,
 
     print(f"\n[{hisse_kodu}] {len(kanallar)} ozel + {len(GENEL_KANALLAR)} genel kanal")
 
-    # Hisseye ozel kanallar (filtre gerekmez, zaten hisseye aittir)
     for kanal in kanallar:
         print(f"  Ozel kanal: @{kanal}")
         n = await kanal_isle(
             client, kanal, hisse_kodu,
             hisse_filtre=False,
-            tokenizer=tokenizer, model=model, device=device,
             conn=conn, baslangic=baslangic,
         )
         toplam += n
         print(f"  @{kanal}: {n} mesaj kaydedildi")
         await asyncio.sleep(random.uniform(*BEKLEME_KANAL))
 
-    # Genel borsa kanallarindan hisse_kodu icerenleri filtrele
     for kanal in GENEL_KANALLAR:
         print(f"  Genel kanal: @{kanal} ({hisse_kodu} filtreli)")
         n = await kanal_isle(
             client, kanal, hisse_kodu,
             hisse_filtre=True,
-            tokenizer=tokenizer, model=model, device=device,
             conn=conn, baslangic=baslangic,
         )
         toplam += n
@@ -341,7 +330,6 @@ async def main():
     print(f"Max mesaj: kanal basi {MAX_MESAJ_KANAL}")
     print("=" * 65)
 
-    tokenizer, model, device = bert_yukle()
     conn = sqlite3.connect(DB_YOLU, timeout=30)
     conn.execute("PRAGMA journal_mode=WAL")  # Concurrent erisimde lock onler
 
@@ -352,9 +340,7 @@ async def main():
         toplam = 0
         hisseler = list(HISSE_KANALLARI.keys())
         for hisse in hisseler:
-            n = await hisse_isle(
-                client, hisse, tokenizer, model, device, conn, baslangic
-            )
+            n = await hisse_isle(client, hisse, conn, baslangic)
             toplam += n
             print(f"[{hisse}] Toplam: {n} mesaj")
 
