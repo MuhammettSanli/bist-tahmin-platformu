@@ -44,6 +44,9 @@ FINANSAL_OZELLIKLER = [
 HISSE_OZEL_FINANSAL = {
     "EREGL": ["celik_hrc_getiri", "demir_cevheri_getiri"],       # Celik: HRC urun + demir cevheri girdi
     "PETKM": ["dogalgaz_getiri", "petrokimya_getiri"],            # Petrokimya: gaz girdi + sektor proxy
+    "KCHOL": ["tuprs_hisse_getiri", "froto_getiri",              # Holding: istirak hisse getirileri
+              "toaso_getiri", "ykbnk_getiri"],
+    # SAHOL: akbnk+enery kötüleştirdi (%50.9 → %49.6), kaldırıldı
     # TUPRS: crack spread (kerosen+benzin) holdout'u %62.4'e cikardi ama
     # walk-forward %49.8 → overfitting. petrol_getiri base feature'da zaten var.
 }
@@ -160,7 +163,8 @@ def ozellikler_hesapla(hisse_kodu: str, gun_sayisi: int = None) -> pd.DataFrame:
     makro_df = pd.read_sql_query(
         "SELECT tarih, bist100, usdtry, petrol, altin, "
         "celik_hrc, demir_cevheri, dogalgaz, petrokimya, "
-        "kerosen, benzin, eurusd, bugday FROM makro_veriler ORDER BY tarih",
+        "kerosen, benzin, eurusd, bugday, "
+        "tuprs_hisse, froto, toaso, ykbnk, akbnk, enery FROM makro_veriler ORDER BY tarih",
         conn
     )
     conn.close()
@@ -201,6 +205,7 @@ def ozellikler_hesapla(hisse_kodu: str, gun_sayisi: int = None) -> pd.DataFrame:
             "bist100", "usdtry", "petrol", "altin",
             "celik_hrc", "demir_cevheri", "dogalgaz", "petrokimya",
             "kerosen", "benzin", "eurusd", "bugday",
+            "tuprs_hisse", "froto", "toaso", "ykbnk", "akbnk", "enery",
         ]
         for col in _tum_makro:
             if col in makro_df.columns:
