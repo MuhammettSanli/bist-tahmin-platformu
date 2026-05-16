@@ -10,10 +10,15 @@ _sys.path.insert(0, _os.path.dirname(_os.path.dirname(_os.path.abspath(__file__)
 
 
 import sqlite3
+import os
+import requests
 from datetime import datetime, timedelta
 import yfinance as yf
 import pandas as pd
+from dotenv import load_dotenv
 from database import DB_YOLU, HISSELER
+
+load_dotenv()
 
 # ─── Ayarlar ─────────────────────────────────────────────────────────────────
 # Şu an sadece THYAO. Daha sonra HISSELER.keys() ile genişletilebilir.
@@ -190,8 +195,104 @@ def makro_veritabanina_kaydet(df: pd.DataFrame) -> int:
     return eklenen
 
 
+# ─── TCMB Faiz Oranı (EVDS API) ──────────────────────────────────────────────
+
+def tcmb_faiz_indir() -> pd.DataFrame:
+    """
+    TCMB 1 haftalık repo faiz oranını EVDS API'den çeker.
+    API anahtarı: evds2.tcmb.gov.tr → Kayıt Ol → Profil → API Anahtarı
+    .env dosyasına EVDS_API_KEY=... olarak ekle.
+
+    Faiz kararları ayda bir MPC toplantısında açıklanır; günler arası
+    değer sabit kalır (ffill ile doldurulur).
+    """
+    api_key = os.getenv("EVDS_API_KEY", "")
+    if not api_key:
+        print("  [TCMB] EVDS_API_KEY bulunamadi - atlaniyor.")
+        print("         Anahtar: evds2.tcmb.gov.tr > Kayit Ol > Profil > API Anahtari")
+        return pd.DataFrame()
+
+    baslangic = BASLANGIC_TARIHI.strftime("%d-%m-%Y")
+    bitis     = BITIS_TARIHI.strftime("%d-%m-%Y")
+
+    url = (
+        "https://evds2.tcmb.gov.tr/service/evds/"
+        f"series=TP.MB.S.PFAIZ"
+        f"&startDate={baslangic}&endDate={bitis}"
+        f"&type=json&key={api_key}"
+    )
+
+    print(f"  [TCMB] Faiz oranı çekiliyor: {baslangic} → {bitis}")
+    try:
+        resp = requests.get(url, timeout=15)
+        resp.raise_for_status()
+        data = resp.json()
+        items = data.get("items", [])
+        if not items:
+            print("  [TCMB] Veri boş geldi.")
+            return pd.DataFrame()
+
+        rows = []
+        for item in items:
+            tarih = item.get("Tarih", "")
+            deger = item.get("TP_MB_S_PFAIZ", None)
+            if tarih and deger not in (None, ""):
+                try:
+                    # EVDS tarih formatı: "DD-MM-YYYY" → "YYYY-MM-DD"
+                    dt = datetime.strptime(tarih, "%d-%m-%Y")
+                    rows.append({"tarih": dt.strftime("%Y-%m-%d"),
+                                 "tcmb_faiz": float(str(deger).replace(",", "."))})
+                except Exception:
+                    pass
+
+        if not rows:
+            print("  [TCMB] Parse edilebilir satır bulunamadı.")
+            return pd.DataFrame()
+
+        df = pd.DataFrame(rows).sort_values("tarih").reset_index(drop=True)
+        print(f"  [TCMB] {len(df)} MPC kararı alındı.")
+        return df
+
+    except Exception as e:
+        print(f"  [TCMB] Hata: {e}")
+        return pd.DataFrame()
+
+
+def tcmb_faiz_veritabanina_kaydet(df: pd.DataFrame) -> int:
+    """
+    TCMB faiz verisi seyrek (ayda bir) → günlük fiyat tablosuyla birleşince
+    ffill ile doldurulur. Burada ham MPC kararlarını kaydediyoruz.
+    Her tarih için INSERT OR REPLACE yapıyoruz; arası günler ffill ile
+    features.py'de doldurulacak.
+    """
+    if df.empty:
+        return 0
+    conn = sqlite3.connect(DB_YOLU)
+    c    = conn.cursor()
+    eklenen = 0
+    for _, row in df.iterrows():
+        try:
+            c.execute(
+                "INSERT OR REPLACE INTO makro_veriler (tarih, tcmb_faiz) "
+                "VALUES (?, ?) "
+                "ON CONFLICT(tarih) DO UPDATE SET tcmb_faiz=excluded.tcmb_faiz",
+                (str(row["tarih"]), float(row["tcmb_faiz"]))
+            )
+            if c.rowcount > 0:
+                eklenen += 1
+        except Exception as e:
+            print(f"    TCMB kayıt hatası: {e}")
+    conn.commit()
+    conn.close()
+    return eklenen
+
+
 if __name__ == "__main__":
     hisseleri_isle()
     df_makro = makro_veri_indir()
     n = makro_veritabanina_kaydet(df_makro)
     print(f"Makro: {n} kayit eklendi/guncellendi.")
+
+    df_faiz = tcmb_faiz_indir()
+    n2 = tcmb_faiz_veritabanina_kaydet(df_faiz)
+    print(f"TCMB faiz: {n2} kayit eklendi/guncellendi.")

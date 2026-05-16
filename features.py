@@ -46,7 +46,9 @@ HISSE_OZEL_FINANSAL = {
     "PETKM": ["dogalgaz_getiri", "petrokimya_getiri"],            # Petrokimya: gaz girdi + sektor proxy
     "KCHOL": ["tuprs_hisse_getiri", "froto_getiri",              # Holding: istirak hisse getirileri
               "toaso_getiri", "ykbnk_getiri"],
-    # SAHOL: akbnk+enery kötüleştirdi (%50.9 → %49.6), kaldırıldı
+    "GARAN": ["tcmb_faiz", "tcmb_faiz_degisim"],               # Banka: faiz seviyesi + MPC kararı etkisi
+    "SAHOL": ["tcmb_faiz", "tcmb_faiz_degisim"],               # Holding (Akbank ağırlıklı): faiz hassas
+    # SAHOL istirak hisseleri (akbnk+enery) kötüleştirdi (%50.9 → %49.6), kaldırıldı
     # TUPRS: crack spread (kerosen+benzin) holdout'u %62.4'e cikardi ama
     # walk-forward %49.8 → overfitting. petrol_getiri base feature'da zaten var.
 }
@@ -164,7 +166,8 @@ def ozellikler_hesapla(hisse_kodu: str, gun_sayisi: int = None) -> pd.DataFrame:
         "SELECT tarih, bist100, usdtry, petrol, altin, "
         "celik_hrc, demir_cevheri, dogalgaz, petrokimya, "
         "kerosen, benzin, eurusd, bugday, "
-        "tuprs_hisse, froto, toaso, ykbnk, akbnk, enery FROM makro_veriler ORDER BY tarih",
+        "tuprs_hisse, froto, toaso, ykbnk, akbnk, enery, "
+        "tcmb_faiz FROM makro_veriler ORDER BY tarih",
         conn
     )
     conn.close()
@@ -216,6 +219,13 @@ def ozellikler_hesapla(hisse_kodu: str, gun_sayisi: int = None) -> pd.DataFrame:
         df = df.merge(makro_df[makro_cols], on="tarih", how="left")
         for col in makro_cols[1:]:
             df[col] = df[col].ffill(limit=5).fillna(0.0)
+
+        # TCMB faiz oranı: MPC kararları seyrek → sınırsız ffill, değişim hesapla
+        if "tcmb_faiz" in makro_df.columns:
+            faiz_df = makro_df[["tarih", "tcmb_faiz"]].dropna(subset=["tcmb_faiz"])
+            df = df.merge(faiz_df, on="tarih", how="left")
+            df["tcmb_faiz"] = df["tcmb_faiz"].ffill().fillna(0.0)
+            df["tcmb_faiz_degisim"] = df["tcmb_faiz"].diff(1).fillna(0.0)
     else:
         for col in ["bist100_getiri", "usdtry_getiri", "petrol_getiri", "altin_getiri"]:
             df[col] = 0.0

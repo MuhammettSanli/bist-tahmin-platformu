@@ -27,7 +27,7 @@ jobs:
       - name: Bagimliliklar
         run: |
           pip install --upgrade pip
-          pip install yfinance xgboost lightgbm scikit-learn pandas numpy joblib python-dotenv
+          pip install yfinance xgboost lightgbm scikit-learn pandas numpy joblib python-dotenv requests
           pip install pandas_ta || pip install pandas_ta --no-build-isolation || echo "pandas_ta kurulamadi, devam ediliyor"
 
       - name: Finansal veri guncelle
