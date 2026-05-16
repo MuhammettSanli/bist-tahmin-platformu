@@ -1,8 +1,8 @@
 {
   "hisse_kodu": "SISE",
   "en_iyi_esik": 0.01,
-  "en_iyi_tip": "hibrit",
-  "en_iyi_algo": "lgbm",
+  "en_iyi_tip": "finansal",
+  "en_iyi_algo": "xgb",
   "sadece_finansal": {
     "accuracy": 0.487179,
     "f1": 0.459459,

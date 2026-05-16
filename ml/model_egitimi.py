@@ -38,6 +38,9 @@ from features import (
 HOLDOUT_BAS     = "2025-10-01"
 HOLDOUT_BIT     = "2026-04-14"
 VAL_ORANI       = 0.10
+# Hibrit modelin finansal modele gore walk-forward'da saglamasi gereken minimum iyilesme.
+# Bu esik altindaki farklarda daha basit finansal model tercih edilir.
+MIN_HIBRIT_WF_IYILESME = 0.02
 MODELLER_KLASOR = _os.path.join(_os.path.dirname(_os.path.dirname(_os.path.abspath(__file__))), "models")
 
 # Walk-forward: kac yil train ederek test edilecek
@@ -364,19 +367,28 @@ def hisse_egit(hisse_kodu: str):
 
         fin_wf = _wf_acc(m_fin)
         hib_wf = _wf_acc(m_hib)
-        print(f"  Finansal -> WalkFwd:%{fin_wf*100:.1f} HoldOut:%{m_fin['accuracy']*100:.1f} F1:{m_fin['f1_macro']:.3f}  |  "
-              f"Hibrit -> WalkFwd:%{hib_wf*100:.1f} HoldOut:%{m_hib['accuracy']*100:.1f} F1:{m_hib['f1_macro']:.3f}")
 
-        for tip, m, wf_acc in [("finansal", m_fin, fin_wf), ("hibrit", m_hib, hib_wf)]:
-            if en_iyi_sonuc is None or wf_acc > en_iyi_sonuc["acc"]:
-                en_iyi_sonuc = {
-                    "esik": esik, "etiket": etiket_esik,
-                    "tip": tip, "acc": wf_acc,
-                    "holdout_acc": m["accuracy"],
-                    "f1_macro": m["f1_macro"], "algoritma": m["algoritma"],
-                    "m_fin": m_fin, "m_hib": m_hib,
-                    "iy_acc": iy_acc, "iy_f1": iy_f1,
-                }
+        # Hibrit ancak walkfwd'da finansaldan MIN_HIBRIT_WF_IYILESME fazla ise secilir.
+        # Daha kucuk farklarda daha basit finansal model tercih edilir (Occam's Razor).
+        if hib_wf - fin_wf >= MIN_HIBRIT_WF_IYILESME:
+            kazanan_tip, kazanan_wf, kazanan_m = "hibrit",   hib_wf, m_hib
+            hib_label = f"WalkFwd:%{hib_wf*100:.1f}* "
+        else:
+            kazanan_tip, kazanan_wf, kazanan_m = "finansal", fin_wf, m_fin
+            hib_label = f"WalkFwd:%{hib_wf*100:.1f}  "
+
+        print(f"  Finansal -> WalkFwd:%{fin_wf*100:.1f} HoldOut:%{m_fin['accuracy']*100:.1f} F1:{m_fin['f1_macro']:.3f}  |  "
+              f"Hibrit -> {hib_label}HoldOut:%{m_hib['accuracy']*100:.1f} F1:{m_hib['f1_macro']:.3f}")
+
+        if en_iyi_sonuc is None or kazanan_wf > en_iyi_sonuc["acc"]:
+            en_iyi_sonuc = {
+                "esik": esik, "etiket": etiket_esik,
+                "tip": kazanan_tip, "acc": kazanan_wf,
+                "holdout_acc": kazanan_m["accuracy"],
+                "f1_macro": kazanan_m["f1_macro"], "algoritma": kazanan_m["algoritma"],
+                "m_fin": m_fin, "m_hib": m_hib,
+                "iy_acc": iy_acc, "iy_f1": iy_f1,
+            }
 
     if en_iyi_sonuc is None:
         print("  Hic gecerli sonuc bulunamadi.")
