@@ -296,8 +296,9 @@ def tum_hisseler_ozet():
         en_iyi_esik = m.get("en_iyi_esik", 0.01)
         # JSON key: "sadece_finansal" veya "hibrit"
         json_key = "sadece_finansal" if en_iyi_tip == "finansal" else en_iyi_tip
-        acc = m.get(json_key, {}).get("accuracy", 0)
-        f1  = m.get(json_key, {}).get("f1_macro", 0)
+        m_data = m.get(json_key, {})
+        acc = m_data.get("wf_acc") or m_data.get("accuracy", 0)
+        f1  = m_data.get("f1_macro", 0)
         sonuc.append({
             "hisse_kodu":  hisse_kodu,
             "sirket_adi":  sirket_adi,

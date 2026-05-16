@@ -5,6 +5,7 @@
   "en_iyi_algo": "lgbm",
   "sadece_finansal": {
     "accuracy": 0.445946,
+    "wf_acc": 0.505321,
     "f1": 0.369231,
     "f1_macro": 0.437627,
     "esik": 0.5,
@@ -33,6 +34,7 @@
   },
   "hibrit": {
     "accuracy": 0.594595,
+    "wf_acc": 0.516459,
     "f1": 0.6875,
     "f1_macro": 0.555288,
     "esik": 0.45,

@@ -312,13 +312,15 @@ def tek_model_egit(df: pd.DataFrame, ozellikler: list, etiket: str,
               "w", encoding="utf-8") as fp:
         json.dump(meta, fp, ensure_ascii=False)
 
+    wf_acc = wf.get("wf_acc_ort") if wf.get("wf_katlar", 0) > 0 else kazanan_acc
     return {
-        "accuracy": round(kazanan_acc, 6),
-        "f1": round(f1_pos, 6),
-        "f1_macro": round(kazanan_f1, 6),
-        "esik": kazanan_esik,
-        "algoritma": kazanan_turu,
-        "wf": wf,
+        "accuracy":    round(kazanan_acc, 6),   # holdout (tek dönem, iyimser)
+        "wf_acc":      round(wf_acc, 6),        # walk-forward (çok dönem, gerçekçi)
+        "f1":          round(f1_pos, 6),
+        "f1_macro":    round(kazanan_f1, 6),
+        "esik":        kazanan_esik,
+        "algoritma":   kazanan_turu,
+        "wf":          wf,
     }
 
 
