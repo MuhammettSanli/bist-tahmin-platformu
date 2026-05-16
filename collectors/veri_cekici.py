@@ -199,63 +199,26 @@ def makro_veritabanina_kaydet(df: pd.DataFrame) -> int:
 
 def tcmb_faiz_indir() -> pd.DataFrame:
     """
-    TCMB 1 haftalık repo faiz oranını EVDS API'den çeker.
-    API anahtarı: evds2.tcmb.gov.tr → Kayıt Ol → Profil → API Anahtarı
-    .env dosyasına EVDS_API_KEY=... olarak ekle.
+    TCMB 1-haftalık repo faiz oranını data/tcmb_faiz.csv'den okur.
+    CSV formatı: tarih (YYYY-MM-DD), tcmb_faiz (yüzde, ör: 42.50)
 
-    Faiz kararları ayda bir MPC toplantısında açıklanır; günler arası
-    değer sabit kalır (ffill ile doldurulur).
+    Yeni MPC kararı sonrası CSV'e tek satır eklemek yeterlidir:
+      tarih,tcmb_faiz
+      2025-06-19,37.50
     """
-    api_key = os.getenv("EVDS_API_KEY", "")
-    if not api_key:
-        print("  [TCMB] EVDS_API_KEY bulunamadi - atlaniyor.")
-        print("         Anahtar: evds2.tcmb.gov.tr > Kayit Ol > Profil > API Anahtari")
-        return pd.DataFrame()
-
-    baslangic = BASLANGIC_TARIHI.strftime("%d-%m-%Y")
-    bitis     = BITIS_TARIHI.strftime("%d-%m-%Y")
-
-    url = (
-        "https://evds2.tcmb.gov.tr/service/evds/"
-        f"series=TP.MB.S.PFAIZ"
-        f"&startDate={baslangic}&endDate={bitis}"
-        f"&type=json&key={api_key}"
+    csv_yolu = os.path.join(
+        os.path.dirname(os.path.dirname(os.path.abspath(__file__))),
+        "data", "tcmb_faiz.csv"
     )
-
-    print(f"  [TCMB] Faiz oranı çekiliyor: {baslangic} → {bitis}")
-    try:
-        resp = requests.get(url, timeout=15)
-        resp.raise_for_status()
-        data = resp.json()
-        items = data.get("items", [])
-        if not items:
-            print("  [TCMB] Veri boş geldi.")
-            return pd.DataFrame()
-
-        rows = []
-        for item in items:
-            tarih = item.get("Tarih", "")
-            deger = item.get("TP_MB_S_PFAIZ", None)
-            if tarih and deger not in (None, ""):
-                try:
-                    # EVDS tarih formatı: "DD-MM-YYYY" → "YYYY-MM-DD"
-                    dt = datetime.strptime(tarih, "%d-%m-%Y")
-                    rows.append({"tarih": dt.strftime("%Y-%m-%d"),
-                                 "tcmb_faiz": float(str(deger).replace(",", "."))})
-                except Exception:
-                    pass
-
-        if not rows:
-            print("  [TCMB] Parse edilebilir satır bulunamadı.")
-            return pd.DataFrame()
-
-        df = pd.DataFrame(rows).sort_values("tarih").reset_index(drop=True)
-        print(f"  [TCMB] {len(df)} MPC kararı alındı.")
-        return df
-
-    except Exception as e:
-        print(f"  [TCMB] Hata: {e}")
+    if not os.path.exists(csv_yolu):
+        print(f"  [TCMB] {csv_yolu} bulunamadi - atlaniyor.")
         return pd.DataFrame()
+
+    df = pd.read_csv(csv_yolu)
+    df["tarih"] = pd.to_datetime(df["tarih"]).dt.strftime("%Y-%m-%d")
+    df = df.sort_values("tarih").reset_index(drop=True)
+    print(f"  [TCMB] {len(df)} MPC karari yuklendi (son: {df['tarih'].iloc[-1]} = %{df['tcmb_faiz'].iloc[-1]})")
+    return df
 
 
 def tcmb_faiz_veritabanina_kaydet(df: pd.DataFrame) -> int:

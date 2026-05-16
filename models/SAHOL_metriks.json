@@ -4,46 +4,46 @@
   "en_iyi_tip": "finansal",
   "en_iyi_algo": "xgb",
   "sadece_finansal": {
-    "accuracy": 0.545455,
-    "wf_acc": 0.509485,
-    "f1": 0.657534,
-    "f1_macro": 0.490929,
+    "accuracy": 0.536364,
+    "wf_acc": 0.506617,
+    "f1": 0.604651,
+    "f1_macro": 0.522106,
     "esik": 0.45,
     "algoritma": "xgb",
     "wf": {
-      "wf_acc_ort": 0.509485,
-      "wf_f1_ort": 0.329757,
-      "wf_acc_std": 0.064616,
-      "wf_f1_std": 0.234221,
+      "wf_acc_ort": 0.506617,
+      "wf_f1_ort": 0.324842,
+      "wf_acc_std": 0.046993,
+      "wf_f1_std": 0.209542,
       "wf_katlar": 3,
       "wf_detay": [
         {
           "acc": 0.4414,
-          "f1": 0.0
+          "f1": 0.0312
         },
         {
-          "acc": 0.5963,
-          "f1": 0.5217
+          "acc": 0.5505,
+          "f1": 0.4368
         },
         {
-          "acc": 0.4907,
-          "f1": 0.4675
+          "acc": 0.528,
+          "f1": 0.5065
         }
       ]
     }
   },
   "hibrit": {
-    "accuracy": 0.472727,
-    "wf_acc": 0.505629,
-    "f1": 0.408163,
-    "f1_macro": 0.466377,
-    "esik": 0.5,
-    "algoritma": "xgb",
+    "accuracy": 0.454545,
+    "wf_acc": 0.490244,
+    "f1": 0.545455,
+    "f1_macro": 0.431818,
+    "esik": 0.45,
+    "algoritma": "lgbm",
     "wf": {
-      "wf_acc_ort": 0.505629,
-      "wf_f1_ort": 0.290677,
-      "wf_acc_std": 0.045481,
-      "wf_f1_std": 0.231501,
+      "wf_acc_ort": 0.490244,
+      "wf_f1_ort": 0.317168,
+      "wf_acc_std": 0.034516,
+      "wf_f1_std": 0.246658,
       "wf_katlar": 3,
       "wf_detay": [
         {
@@ -51,16 +51,16 @@
           "f1": 0.0
         },
         {
-          "acc": 0.5413,
-          "f1": 0.3056
+          "acc": 0.5138,
+          "f1": 0.6015
         },
         {
-          "acc": 0.5342,
-          "f1": 0.5665
+          "acc": 0.5155,
+          "f1": 0.35
         }
       ]
     }
   },
-  "iyilesme_acc": -0.072728,
-  "iyilesme_f1": -0.024552
+  "iyilesme_acc": -0.081819,
+  "iyilesme_f1": -0.090288
 }
