@@ -5,43 +5,15 @@
   "en_iyi_algo": "lgbm",
   "sadece_finansal": {
     "accuracy": 0.486486,
-    "f1": 0.366667,
-    "f1_macro": 0.467424,
+    "f1": 0.472222,
+    "f1_macro": 0.486111,
     "esik": 0.5,
-    "algoritma": "xgb",
-    "wf": {
-      "wf_acc_ort": 0.527237,
-      "wf_f1_ort": 0.32764,
-      "wf_acc_std": 0.048842,
-      "wf_f1_std": 0.150782,
-      "wf_katlar": 3,
-      "wf_detay": [
-        {
-          "acc": 0.5833,
-          "f1": 0.5122
-        },
-        {
-          "acc": 0.5341,
-          "f1": 0.3279
-        },
-        {
-          "acc": 0.4643,
-          "f1": 0.1429
-        }
-      ]
-    }
-  },
-  "hibrit": {
-    "accuracy": 0.581081,
-    "f1": 0.666667,
-    "f1_macro": 0.551515,
-    "esik": 0.45,
     "algoritma": "lgbm",
     "wf": {
-      "wf_acc_ort": 0.523223,
-      "wf_f1_ort": 0.56007,
-      "wf_acc_std": 0.032757,
-      "wf_f1_std": 0.081897,
+      "wf_acc_ort": 0.479392,
+      "wf_f1_ort": 0.388408,
+      "wf_acc_std": 0.023224,
+      "wf_f1_std": 0.285004,
       "wf_katlar": 3,
       "wf_detay": [
         {
@@ -49,16 +21,44 @@
           "f1": 0.6759
         },
         {
-          "acc": 0.5682,
-          "f1": 0.5
+          "acc": 0.4545,
+          "f1": 0.4894
         },
         {
-          "acc": 0.4911,
-          "f1": 0.5043
+          "acc": 0.4732,
+          "f1": 0.0
         }
       ]
     }
   },
-  "iyilesme_acc": 0.094595,
-  "iyilesme_f1": 0.084091
+  "hibrit": {
+    "accuracy": 0.527027,
+    "f1": 0.666667,
+    "f1_macro": 0.426357,
+    "esik": 0.4,
+    "algoritma": "lgbm",
+    "wf": {
+      "wf_acc_ort": 0.511048,
+      "wf_f1_ort": 0.549187,
+      "wf_acc_std": 0.009289,
+      "wf_f1_std": 0.090315,
+      "wf_katlar": 3,
+      "wf_detay": [
+        {
+          "acc": 0.5104,
+          "f1": 0.6759
+        },
+        {
+          "acc": 0.5227,
+          "f1": 0.5
+        },
+        {
+          "acc": 0.5,
+          "f1": 0.4717
+        }
+      ]
+    }
+  },
+  "iyilesme_acc": 0.040541,
+  "iyilesme_f1": -0.059754
 }

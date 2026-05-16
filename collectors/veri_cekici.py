@@ -102,10 +102,14 @@ def hisseleri_isle():
 # ─── Makro Veri ──────────────────────────────────────────────────────────────
 
 MAKRO_SEMBOLLER = {
-    "bist100": "XU100.IS",   # BIST100 endeksi
-    "usdtry":  "USDTRY=X",  # Dolar/TL kuru
-    "petrol":  "BZ=F",       # Brent Ham Petrol (TUPRS/PETKM icin kritik)
-    "altin":   "GC=F",       # Altin fiyati
+    "bist100":       "XU100.IS",  # BIST100 endeksi
+    "usdtry":        "USDTRY=X",  # Dolar/TL kuru
+    "petrol":        "BZ=F",      # Brent Ham Petrol
+    "altin":         "GC=F",      # Altin fiyati
+    "celik_hrc":     "HRC=F",     # Sicak Haddelenmiş Celik (EREGL urun fiyati)
+    "demir_cevheri": "TIO=F",     # Demir Cevheri (EREGL girdi maliyeti)
+    "dogalgaz":      "NG=F",      # Dogal Gaz (PETKM uretim girdisi)
+    "petrokimya":    "LYB",       # LyondellBasell (PETKM sektor proxy)
 }
 
 
@@ -149,16 +153,16 @@ def makro_veritabanina_kaydet(df: pd.DataFrame) -> int:
     eklenen = 0
     for _, row in df.iterrows():
         try:
+            def f(col): return float(row[col]) if col in row and pd.notna(row[col]) else None
             c.execute(
                 """INSERT OR REPLACE INTO makro_veriler
-                   (tarih, bist100, usdtry, petrol, altin)
-                   VALUES (?, ?, ?, ?, ?)""",
+                   (tarih, bist100, usdtry, petrol, altin,
+                    celik_hrc, demir_cevheri, dogalgaz, petrokimya)
+                   VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)""",
                 (
                     str(row["tarih"]),
-                    float(row["bist100"]) if "bist100" in row and pd.notna(row["bist100"]) else None,
-                    float(row["usdtry"])  if "usdtry"  in row and pd.notna(row["usdtry"])  else None,
-                    float(row["petrol"])  if "petrol"  in row and pd.notna(row["petrol"])  else None,
-                    float(row["altin"])   if "altin"   in row and pd.notna(row["altin"])   else None,
+                    f("bist100"), f("usdtry"), f("petrol"), f("altin"),
+                    f("celik_hrc"), f("demir_cevheri"), f("dogalgaz"), f("petrokimya"),
                 )
             )
             if c.rowcount > 0:

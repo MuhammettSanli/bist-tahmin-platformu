@@ -38,6 +38,7 @@ FINANSAL_OZELLIKLER = [
     "ATR", "STOCH_k", "ROC",
     "hacim_oran", "hl_spread",
     "bist100_getiri", "usdtry_getiri", "petrol_getiri", "altin_getiri",
+    "celik_hrc_getiri", "demir_cevheri_getiri", "dogalgaz_getiri", "petrokimya_getiri",
 ]
 
 HIBRIT_OZELLIKLER = FINANSAL_OZELLIKLER + [
@@ -137,7 +138,8 @@ def ozellikler_hesapla(hisse_kodu: str, gun_sayisi: int = None) -> pd.DataFrame:
         conn, params=(hisse_kodu,)
     )
     makro_df = pd.read_sql_query(
-        "SELECT tarih, bist100, usdtry, petrol, altin FROM makro_veriler ORDER BY tarih",
+        "SELECT tarih, bist100, usdtry, petrol, altin, "
+        "celik_hrc, demir_cevheri, dogalgaz, petrokimya FROM makro_veriler ORDER BY tarih",
         conn
     )
     conn.close()
@@ -174,11 +176,13 @@ def ozellikler_hesapla(hisse_kodu: str, gun_sayisi: int = None) -> pd.DataFrame:
 
     # ── Makro getiriler ─────────────────────────────────────────────────────
     if not makro_df.empty:
-        for col in ["bist100", "usdtry", "petrol", "altin"]:
+        for col in ["bist100", "usdtry", "petrol", "altin",
+                    "celik_hrc", "demir_cevheri", "dogalgaz", "petrokimya"]:
             if col in makro_df.columns:
                 makro_df[f"{col}_getiri"] = makro_df[col].pct_change(fill_method=None)
         makro_cols = ["tarih"] + [
-            f"{c}_getiri" for c in ["bist100", "usdtry", "petrol", "altin"]
+            f"{c}_getiri" for c in ["bist100", "usdtry", "petrol", "altin",
+                                    "celik_hrc", "demir_cevheri", "dogalgaz", "petrokimya"]
             if c in makro_df.columns
         ]
         df = df.merge(makro_df[makro_cols], on="tarih", how="left")
