@@ -4,11 +4,11 @@
   "en_iyi_tip": "hibrit",
   "en_iyi_algo": "xgb",
   "sadece_finansal": {
-    "accuracy": 0.506024,
-    "f1": 0.672,
-    "f1_macro": 0.336,
-    "esik": 0.3,
-    "algoritma": "lgbm",
+    "accuracy": 0.522936,
+    "f1": 0.103448,
+    "f1_macro": 0.389224,
+    "esik": 0.5,
+    "algoritma": "xgb",
     "wf": {
       "wf_acc_ort": 0.529312,
       "wf_f1_ort": 0.607069,
@@ -21,8 +21,8 @@
           "f1": 0.6316
         },
         {
-          "acc": 0.5056,
-          "f1": 0.6716
+          "acc": 0.4444,
+          "f1": 0.5312
         },
         {
           "acc": 0.4846,
