@@ -25,7 +25,7 @@ LAG_GUNLER = [1, 2, 3, 5, 10]
 
 LAG_SUTUNLAR = [
     "kapanis", "RSI", "hacim_oran", "hl_spread",
-    "duygu_skoru", "duygu_momentum", "duygu_std7",
+    "duygu_skoru", "duygu_momentum", "duygu_std7", "duygu_delta",
     "haber_duygu", "haber_momentum",
     "duygu_hacim", "haber_hacim", "duygu_abs_mom",
     "kaynak_sayisi", "konsensus", "std_kaynak",
@@ -41,7 +41,7 @@ FINANSAL_OZELLIKLER = [
 ]
 
 HIBRIT_OZELLIKLER = FINANSAL_OZELLIKLER + [
-    "duygu_skoru", "duygu_momentum", "duygu_std7",
+    "duygu_skoru", "duygu_momentum", "duygu_std7", "duygu_delta",
     "haber_duygu", "haber_momentum",
     "duygu_hacim", "haber_hacim", "duygu_abs_mom",
     "kaynak_sayisi", "konsensus", "std_kaynak",
@@ -158,6 +158,7 @@ def ozellikler_hesapla(hisse_kodu: str, gun_sayisi: int = None) -> pd.DataFrame:
     df["duygu_skoru"]    = duygu_ma7
     df["duygu_momentum"] = raw_duygu - duygu_ma7          # ham - 7g ort = ani sapma
     df["duygu_std7"]     = raw_duygu.rolling(window=7, min_periods=1).std().fillna(0.0)
+    df["duygu_delta"]    = raw_duygu.diff(1).fillna(0.0)  # gün gün değişim
 
     raw_haber = df["haber_duygu"].ffill(limit=30).fillna(0.0)
     haber_ma7 = raw_haber.rolling(window=7, min_periods=1).mean()

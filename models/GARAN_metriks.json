@@ -32,10 +32,10 @@
     }
   },
   "hibrit": {
-    "accuracy": 0.506024,
-    "f1": 0.672,
-    "f1_macro": 0.336,
-    "esik": 0.3,
+    "accuracy": 0.493976,
+    "f1": 0.125,
+    "f1_macro": 0.384534,
+    "esik": 0.55,
     "algoritma": "lgbm",
     "wf": {
       "wf_acc_ort": 0.512374,
@@ -59,6 +59,6 @@
       ]
     }
   },
-  "iyilesme_acc": 0.0,
-  "iyilesme_f1": 0.0
+  "iyilesme_acc": -0.012048,
+  "iyilesme_f1": 0.048534
 }
