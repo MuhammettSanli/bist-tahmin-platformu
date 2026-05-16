@@ -30,6 +30,7 @@ from database import HISSELER
 from features import (
     ozellikler_hesapla, lag_ekle,
     FINANSAL_OZELLIKLER, HIBRIT_OZELLIKLER, LAG_GUNLER,
+    finansal_ozellikler_al, hibrit_ozellikler_al,
 )
 
 
@@ -343,12 +344,15 @@ def hisse_egit(hisse_kodu: str):
         etiket_esik = f"{'05' if esik == 0.005 else '1'}pct"
         print(f"\n  --- Esik: ±%{esik*100:.1f} | {len(df_e)} satir ---")
 
+        fin_ozellikler = finansal_ozellikler_al(hisse_kodu)
+        hib_ozellikler = hibrit_ozellikler_al(hisse_kodu)
+
         print(f"  [1/2] Finansal ({etiket_esik}) egitiliyor...")
-        m_fin = tek_model_egit(df_e, FINANSAL_OZELLIKLER,
+        m_fin = tek_model_egit(df_e, fin_ozellikler,
                                f"finansal_{etiket_esik}", hisse_kodu)
 
         print(f"  [2/2] Hibrit ({etiket_esik}) egitiliyor...")
-        m_hib = tek_model_egit(df_e, HIBRIT_OZELLIKLER,
+        m_hib = tek_model_egit(df_e, hib_ozellikler,
                                f"hibrit_{etiket_esik}", hisse_kodu)
 
         iy_acc = round(m_hib["accuracy"] - m_fin["accuracy"], 6)

@@ -1,64 +1,64 @@
 {
   "hisse_kodu": "ASELS",
-  "en_iyi_esik": 0.01,
+  "en_iyi_esik": 0.005,
   "en_iyi_tip": "finansal",
   "en_iyi_algo": "lgbm",
   "sadece_finansal": {
-    "accuracy": 0.6,
-    "f1": 0.75,
-    "f1_macro": 0.375,
+    "accuracy": 0.530435,
+    "f1": 0.693182,
+    "f1_macro": 0.346591,
     "esik": 0.3,
     "algoritma": "lgbm",
     "wf": {
-      "wf_acc_ort": 0.495321,
-      "wf_f1_ort": 0.311718,
-      "wf_acc_std": 0.054627,
-      "wf_f1_std": 0.277614,
+      "wf_acc_ort": 0.462135,
+      "wf_f1_ort": 0.430725,
+      "wf_acc_std": 0.048368,
+      "wf_f1_std": 0.109976,
       "wf_katlar": 3,
       "wf_detay": [
         {
-          "acc": 0.4688,
-          "f1": 0.2609
+          "acc": 0.3947,
+          "f1": 0.4
         },
         {
-          "acc": 0.4458,
-          "f1": 0.0
+          "acc": 0.4857,
+          "f1": 0.5781
         },
         {
-          "acc": 0.5714,
-          "f1": 0.6743
+          "acc": 0.506,
+          "f1": 0.314
         }
       ]
     }
   },
   "hibrit": {
-    "accuracy": 0.568421,
-    "f1": 0.549451,
-    "f1_macro": 0.567655,
-    "esik": 0.5,
-    "algoritma": "xgb",
+    "accuracy": 0.530435,
+    "f1": 0.693182,
+    "f1_macro": 0.346591,
+    "esik": 0.3,
+    "algoritma": "lgbm",
     "wf": {
-      "wf_acc_ort": 0.434961,
-      "wf_f1_ort": 0.25968,
-      "wf_acc_std": 0.036839,
-      "wf_f1_std": 0.184004,
+      "wf_acc_ort": 0.489411,
+      "wf_f1_ort": 0.571534,
+      "wf_acc_std": 0.055673,
+      "wf_f1_std": 0.082215,
       "wf_katlar": 3,
       "wf_detay": [
         {
-          "acc": 0.3854,
-          "f1": 0.404
+          "acc": 0.4123,
+          "f1": 0.4553
         },
         {
-          "acc": 0.4458,
-          "f1": 0.0
+          "acc": 0.5143,
+          "f1": 0.6277
         },
         {
-          "acc": 0.4737,
-          "f1": 0.375
+          "acc": 0.5417,
+          "f1": 0.6316
         }
       ]
     }
   },
-  "iyilesme_acc": -0.031579,
-  "iyilesme_f1": 0.192655
+  "iyilesme_acc": 0.0,
+  "iyilesme_f1": 0.0
 }

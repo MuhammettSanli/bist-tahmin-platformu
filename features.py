@@ -38,15 +38,33 @@ FINANSAL_OZELLIKLER = [
     "ATR", "STOCH_k", "ROC",
     "hacim_oran", "hl_spread",
     "bist100_getiri", "usdtry_getiri", "petrol_getiri", "altin_getiri",
-    "celik_hrc_getiri", "demir_cevheri_getiri", "dogalgaz_getiri", "petrokimya_getiri",
 ]
 
-HIBRIT_OZELLIKLER = FINANSAL_OZELLIKLER + [
+# Hisse bazlı ek finansal özellikler (sektöre özgü emtia fiyatları)
+HISSE_OZEL_FINANSAL = {
+    "EREGL": ["celik_hrc_getiri", "demir_cevheri_getiri"],  # Celik uretici
+    "PETKM": ["dogalgaz_getiri", "petrokimya_getiri"],       # Petrokimya
+}
+
+
+def finansal_ozellikler_al(hisse_kodu: str) -> list:
+    """Hisseye özgü finansal özellik listesi döndürür."""
+    ozel = HISSE_OZEL_FINANSAL.get(hisse_kodu, [])
+    return FINANSAL_OZELLIKLER + ozel
+
+DUYGU_OZELLIKLER = [
     "duygu_skoru", "duygu_momentum", "duygu_std7", "duygu_delta",
     "haber_duygu", "haber_momentum",
     "duygu_hacim", "haber_hacim", "duygu_abs_mom",
     "kaynak_sayisi", "konsensus", "std_kaynak",
 ]
+
+HIBRIT_OZELLIKLER = FINANSAL_OZELLIKLER + DUYGU_OZELLIKLER
+
+
+def hibrit_ozellikler_al(hisse_kodu: str) -> list:
+    """Hisseye özgü hibrit özellik listesi döndürür."""
+    return finansal_ozellikler_al(hisse_kodu) + DUYGU_OZELLIKLER
 
 
 # ─── Tutarlılık Sinyali ───────────────────────────────────────────────────────

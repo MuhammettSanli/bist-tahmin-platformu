@@ -1,1 +1,1 @@
-{"ozellikler": ["acilis", "kapanis", "hacim", "SMA_20", "SMA_50", "MACD", "BB_upper", "BB_lower", "BB_width", "ATR", "ROC", "usdtry_getiri", "altin_getiri", "demir_cevheri_getiri", "kapanis_lag1", "kapanis_lag2", "kapanis_lag3", "kapanis_lag5", "kapanis_lag10"], "esik": 0.5, "algoritma": "xgb"}
+{"ozellikler": ["acilis", "kapanis", "hacim", "SMA_20", "SMA_50", "MACD", "BB_upper", "BB_lower", "BB_width", "ATR", "ROC", "usdtry_getiri", "altin_getiri", "kapanis_lag1", "kapanis_lag2", "kapanis_lag3", "kapanis_lag5", "kapanis_lag10"], "esik": 0.3, "algoritma": "lgbm"}
