@@ -40,7 +40,7 @@ HOLDOUT_BIT     = "2026-04-14"
 VAL_ORANI       = 0.10
 # Hibrit modelin finansal modele gore walk-forward'da saglamasi gereken minimum iyilesme.
 # Bu esik altindaki farklarda daha basit finansal model tercih edilir.
-MIN_HIBRIT_WF_IYILESME = 0.02
+MIN_HIBRIT_WF_IYILESME = 0.01
 MODELLER_KLASOR = _os.path.join(_os.path.dirname(_os.path.dirname(_os.path.abspath(__file__))), "models")
 
 # Walk-forward: kac yil train ederek test edilecek

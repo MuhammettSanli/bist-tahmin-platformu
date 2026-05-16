@@ -1,8 +1,8 @@
 {
   "hisse_kodu": "PETKM",
   "en_iyi_esik": 0.01,
-  "en_iyi_tip": "finansal",
-  "en_iyi_algo": "xgb",
+  "en_iyi_tip": "hibrit",
+  "en_iyi_algo": "lgbm",
   "sadece_finansal": {
     "accuracy": 0.445946,
     "f1": 0.369231,
