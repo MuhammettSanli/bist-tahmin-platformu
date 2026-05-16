@@ -175,7 +175,7 @@ def tahmin_yap(hisse_kodu: str):
     if eksik:
         return jsonify({"hata": f"Eksik ozellikler: {eksik}"}), 500
 
-    X        = son_satir[tam_ozellikler].values
+    X        = son_satir[tam_ozellikler]
     olasilik = float(model.predict_proba(X)[0][1])
     yon      = "YÜKSELİŞ" if olasilik >= optimal_esik else "DÜŞÜŞ"
     guven    = round(olasilik * 100 if olasilik >= optimal_esik else (1 - olasilik) * 100, 1)
@@ -234,7 +234,7 @@ def sinyal_gecmisi(hisse_kodu: str):
     if eksik:
         return jsonify({"hata": f"Eksik ozellikler: {eksik}"}), 500
 
-    X_all       = df[tam_ozellikler].values
+    X_all       = df[tam_ozellikler]
     olasiliklar = model.predict_proba(X_all)[:, 1]
 
     # Son 30 gün (son satır hariç — gerçek yön bilinmiyor)
