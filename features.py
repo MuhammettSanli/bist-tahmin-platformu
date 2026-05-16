@@ -44,7 +44,6 @@ FINANSAL_OZELLIKLER = [
 HISSE_OZEL_FINANSAL = {
     "EREGL": ["celik_hrc_getiri", "demir_cevheri_getiri"],       # Celik: HRC urun + demir cevheri girdi
     "PETKM": ["dogalgaz_getiri", "petrokimya_getiri"],            # Petrokimya: gaz girdi + sektor proxy
-    "SISE":  ["dogalgaz_getiri", "eurusd_getiri"],                # Cam: enerji maliyeti + EUR ihracat geliri
     "TUPRS": ["kerosen_getiri", "benzin_getiri"],                 # Rafineri: crack spread = urun - ham petrol
 }
 
