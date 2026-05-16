@@ -42,6 +42,17 @@ ADIMLAR = [
     ("Model Egitimi",         "ml/model_egitimi.py"),
 ]
 
+# Gunluk hizli pipeline: borsa kapanisi sonrasi ~15 dk
+# Finansal veri + BERT skorlama + model yenileme
+GUNLUK_ADIMLAR = [
+    ("Fiyat & Makro Veri",    "collectors/veri_cekici.py"),
+    ("Duygu Analizi (BERT)",  "ml/duygu_analizi.py"),
+    ("Model Egitimi",         "ml/model_egitimi.py"),
+]
+
+# Haftalik tam pipeline: Telegram dahil ~3-4 saat
+HAFTALIK_ADIMLAR = ADIMLAR
+
 
 def log(mesaj: str):
     zaman = datetime.now().strftime("%Y-%m-%d %H:%M:%S")

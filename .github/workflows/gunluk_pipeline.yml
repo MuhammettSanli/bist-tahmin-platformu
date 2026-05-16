@@ -1,0 +1,42 @@
+name: Gunluk Pipeline
+
+on:
+  schedule:
+    # Her is gunu 18:30 Turkiye saati (UTC+3) = 15:30 UTC
+    - cron: '30 15 * * 1-5'
+  workflow_dispatch:
+    # Manuel tetikleme: GitHub > Actions > Gunluk Pipeline > Run workflow
+
+jobs:
+  pipeline:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Repo indir
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Python 3.11 kur
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Bagimliliklar
+        run: pip install -r requirements-actions.txt
+
+      - name: Finansal veri guncelle
+        run: python collectors/veri_cekici.py
+
+      - name: Modelleri yeniden egit
+        run: python ml/model_egitimi.py
+
+      - name: Degisiklikleri kaydet
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add data/borsa.db models/
+          git diff --staged --quiet && echo "Degisiklik yok." || \
+          git commit -m "auto: $(date +'%Y-%m-%d') finansal veri ve model guncellendi" && git push

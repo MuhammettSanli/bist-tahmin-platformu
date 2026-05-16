@@ -1,0 +1,17 @@
+# GitHub Actions icin hafif bagimliliklar
+# torch/transformers dahil DEGIL (BERT gerektiren adimlar manuel calistirilir)
+
+# Finansal veri
+yfinance
+
+# Makine ogrenmesi
+xgboost
+lightgbm
+scikit-learn
+pandas
+pandas_ta
+numpy
+joblib
+
+# Yardimci
+python-dotenv
