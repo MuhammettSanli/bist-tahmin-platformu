@@ -1,7 +1,7 @@
 {
   "hisse_kodu": "GARAN",
   "en_iyi_esik": 0.01,
-  "en_iyi_tip": "finansal",
+  "en_iyi_tip": "hibrit",
   "en_iyi_algo": "lgbm",
   "sadece_finansal": {
     "accuracy": 0.506024,

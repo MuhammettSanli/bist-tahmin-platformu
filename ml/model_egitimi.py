@@ -358,14 +358,21 @@ def hisse_egit(hisse_kodu: str):
         iy_acc = round(m_hib["accuracy"] - m_fin["accuracy"], 6)
         iy_f1  = round(m_hib["f1_macro"] - m_fin["f1_macro"], 6)
 
-        print(f"  Finansal -> Acc:%{m_fin['accuracy']*100:.1f} F1:{m_fin['f1_macro']:.3f}  |  "
-              f"Hibrit -> Acc:%{m_hib['accuracy']*100:.1f} F1:{m_hib['f1_macro']:.3f}")
+        def _wf_acc(m):
+            wf = m.get("wf", {})
+            return wf.get("wf_acc_ort") if wf.get("wf_katlar", 0) > 0 else m["accuracy"]
 
-        for tip, m in [("finansal", m_fin), ("hibrit", m_hib)]:
-            if en_iyi_sonuc is None or m["accuracy"] > en_iyi_sonuc["acc"]:
+        fin_wf = _wf_acc(m_fin)
+        hib_wf = _wf_acc(m_hib)
+        print(f"  Finansal -> WalkFwd:%{fin_wf*100:.1f} HoldOut:%{m_fin['accuracy']*100:.1f} F1:{m_fin['f1_macro']:.3f}  |  "
+              f"Hibrit -> WalkFwd:%{hib_wf*100:.1f} HoldOut:%{m_hib['accuracy']*100:.1f} F1:{m_hib['f1_macro']:.3f}")
+
+        for tip, m, wf_acc in [("finansal", m_fin, fin_wf), ("hibrit", m_hib, hib_wf)]:
+            if en_iyi_sonuc is None or wf_acc > en_iyi_sonuc["acc"]:
                 en_iyi_sonuc = {
                     "esik": esik, "etiket": etiket_esik,
-                    "tip": tip, "acc": m["accuracy"],
+                    "tip": tip, "acc": wf_acc,
+                    "holdout_acc": m["accuracy"],
                     "f1_macro": m["f1_macro"], "algoritma": m["algoritma"],
                     "m_fin": m_fin, "m_hib": m_hib,
                     "iy_acc": iy_acc, "iy_f1": iy_f1,
@@ -402,7 +409,7 @@ def hisse_egit(hisse_kodu: str):
 
     print(f"\n  *** EN IYI: esik=±%{es['esik']*100:.1f} | "
           f"[{es['tip'].upper()}|{es['algoritma'].upper()}] | "
-          f"Acc:%{es['acc']*100:.1f} F1:{es['f1_macro']:.3f} ***")
+          f"WalkFwd:%{es['acc']*100:.1f} HoldOut:%{es['holdout_acc']*100:.1f} F1:{es['f1_macro']:.3f} ***")
     print(f"  Metriks: {yol}")
 
 

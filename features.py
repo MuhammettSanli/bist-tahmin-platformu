@@ -44,7 +44,8 @@ FINANSAL_OZELLIKLER = [
 HISSE_OZEL_FINANSAL = {
     "EREGL": ["celik_hrc_getiri", "demir_cevheri_getiri"],       # Celik: HRC urun + demir cevheri girdi
     "PETKM": ["dogalgaz_getiri", "petrokimya_getiri"],            # Petrokimya: gaz girdi + sektor proxy
-    "TUPRS": ["kerosen_getiri", "benzin_getiri"],                 # Rafineri: crack spread = urun - ham petrol
+    # TUPRS: crack spread (kerosen+benzin) holdout'u %62.4'e cikardi ama
+    # walk-forward %49.8 → overfitting. petrol_getiri base feature'da zaten var.
 }
 
 
