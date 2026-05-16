@@ -42,8 +42,10 @@ FINANSAL_OZELLIKLER = [
 
 # Hisse bazlı ek finansal özellikler (sektöre özgü emtia fiyatları)
 HISSE_OZEL_FINANSAL = {
-    "EREGL": ["celik_hrc_getiri", "demir_cevheri_getiri"],  # Celik uretici
-    "PETKM": ["dogalgaz_getiri", "petrokimya_getiri"],       # Petrokimya
+    "EREGL": ["celik_hrc_getiri", "demir_cevheri_getiri"],       # Celik: HRC urun + demir cevheri girdi
+    "PETKM": ["dogalgaz_getiri", "petrokimya_getiri"],            # Petrokimya: gaz girdi + sektor proxy
+    "SISE":  ["dogalgaz_getiri", "eurusd_getiri"],                # Cam: enerji maliyeti + EUR ihracat geliri
+    "TUPRS": ["kerosen_getiri", "benzin_getiri"],                 # Rafineri: crack spread = urun - ham petrol
 }
 
 
@@ -157,7 +159,8 @@ def ozellikler_hesapla(hisse_kodu: str, gun_sayisi: int = None) -> pd.DataFrame:
     )
     makro_df = pd.read_sql_query(
         "SELECT tarih, bist100, usdtry, petrol, altin, "
-        "celik_hrc, demir_cevheri, dogalgaz, petrokimya FROM makro_veriler ORDER BY tarih",
+        "celik_hrc, demir_cevheri, dogalgaz, petrokimya, "
+        "kerosen, benzin, eurusd, bugday FROM makro_veriler ORDER BY tarih",
         conn
     )
     conn.close()
@@ -194,14 +197,16 @@ def ozellikler_hesapla(hisse_kodu: str, gun_sayisi: int = None) -> pd.DataFrame:
 
     # ── Makro getiriler ─────────────────────────────────────────────────────
     if not makro_df.empty:
-        for col in ["bist100", "usdtry", "petrol", "altin",
-                    "celik_hrc", "demir_cevheri", "dogalgaz", "petrokimya"]:
+        _tum_makro = [
+            "bist100", "usdtry", "petrol", "altin",
+            "celik_hrc", "demir_cevheri", "dogalgaz", "petrokimya",
+            "kerosen", "benzin", "eurusd", "bugday",
+        ]
+        for col in _tum_makro:
             if col in makro_df.columns:
                 makro_df[f"{col}_getiri"] = makro_df[col].pct_change(fill_method=None)
         makro_cols = ["tarih"] + [
-            f"{c}_getiri" for c in ["bist100", "usdtry", "petrol", "altin",
-                                    "celik_hrc", "demir_cevheri", "dogalgaz", "petrokimya"]
-            if c in makro_df.columns
+            f"{c}_getiri" for c in _tum_makro if c in makro_df.columns
         ]
         df = df.merge(makro_df[makro_cols], on="tarih", how="left")
         for col in makro_cols[1:]:

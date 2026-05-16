@@ -106,10 +106,14 @@ MAKRO_SEMBOLLER = {
     "usdtry":        "USDTRY=X",  # Dolar/TL kuru
     "petrol":        "BZ=F",      # Brent Ham Petrol
     "altin":         "GC=F",      # Altin fiyati
-    "celik_hrc":     "HRC=F",     # Sicak Haddelenmiş Celik (EREGL urun fiyati)
+    "celik_hrc":     "HRC=F",     # Sicak Haddelenmis Celik (EREGL urun fiyati)
     "demir_cevheri": "TIO=F",     # Demir Cevheri (EREGL girdi maliyeti)
-    "dogalgaz":      "NG=F",      # Dogal Gaz (PETKM uretim girdisi)
+    "dogalgaz":      "NG=F",      # Dogal Gaz (PETKM/SISE uretim girdisi)
     "petrokimya":    "LYB",       # LyondellBasell (PETKM sektor proxy)
+    "kerosen":       "HO=F",      # Isitma yagi = jet yakiti proxy (THYAO/TUPRS)
+    "benzin":        "RB=F",      # RBOB benzin = rafineri urun marji (TUPRS crack spread)
+    "eurusd":        "EURUSD=X",  # EUR/USD kuru (SISE ihracat geliri EUR cinsinden)
+    "bugday":        "ZW=F",      # Bugday vadeli islemi (BIMAS gida hammadde maliyeti)
 }
 
 
@@ -157,12 +161,14 @@ def makro_veritabanina_kaydet(df: pd.DataFrame) -> int:
             c.execute(
                 """INSERT OR REPLACE INTO makro_veriler
                    (tarih, bist100, usdtry, petrol, altin,
-                    celik_hrc, demir_cevheri, dogalgaz, petrokimya)
-                   VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)""",
+                    celik_hrc, demir_cevheri, dogalgaz, petrokimya,
+                    kerosen, benzin, eurusd, bugday)
+                   VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
                 (
                     str(row["tarih"]),
                     f("bist100"), f("usdtry"), f("petrol"), f("altin"),
                     f("celik_hrc"), f("demir_cevheri"), f("dogalgaz"), f("petrokimya"),
+                    f("kerosen"), f("benzin"), f("eurusd"), f("bugday"),
                 )
             )
             if c.rowcount > 0:
