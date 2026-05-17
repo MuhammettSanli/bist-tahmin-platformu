@@ -91,15 +91,25 @@ def veritabanini_olustur():
         )
     """)
 
-    # 6. Makro ekonomik gostergeler (BIST100, USDTRY, petrol, altin)
+    # 6. Makro ekonomik gostergeler
     c.execute("""
         CREATE TABLE IF NOT EXISTS makro_veriler (
-            id          INTEGER PRIMARY KEY AUTOINCREMENT,
-            tarih       DATE NOT NULL UNIQUE,
-            bist100     REAL,
-            usdtry      REAL,
-            petrol      REAL,
-            altin       REAL
+            id              INTEGER PRIMARY KEY AUTOINCREMENT,
+            tarih           DATE NOT NULL UNIQUE,
+            bist100         REAL,
+            usdtry          REAL,
+            petrol          REAL,
+            altin           REAL,
+            celik_hrc       REAL,
+            demir_cevheri   REAL,
+            dogalgaz        REAL,
+            petrokimya      REAL,
+            tuprs_hisse     REAL,
+            froto           REAL,
+            toaso           REAL,
+            ykbnk           REAL,
+            eurtry          REAL,
+            tcmb_faiz       REAL
         )
     """)
 

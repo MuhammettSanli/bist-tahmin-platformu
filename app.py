@@ -74,7 +74,7 @@ def model_yukle(hisse_kodu: str, tip: str = "best"):
         meta_yolu  = os.path.join(MODELLER_KLASOR, f"{hisse_kodu}_{tip}_meta.json")
         # best modeli yoksa hibrit, o da yoksa finansale don
         if not os.path.exists(model_yolu):
-            for fallback in ["hibrit", "finansal"]:
+            for fallback in ["hibrit_05pct", "hibrit_1pct", "finansal_05pct", "finansal_1pct"]:
                 model_yolu = os.path.join(MODELLER_KLASOR, f"{hisse_kodu}_{fallback}_model.pkl")
                 meta_yolu  = os.path.join(MODELLER_KLASOR, f"{hisse_kodu}_{fallback}_meta.json")
                 if os.path.exists(model_yolu):
