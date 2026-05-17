@@ -53,8 +53,11 @@ def metni_temizle(metin: str) -> str:
 
 
 def metin_kaliteli_mi(metin: str) -> bool:
-    """Cok kisa veya tekrarlayan icerikli metinleri filtreler."""
+    """Cok kisa, bot komutu veya tekrarlayan icerikli metinleri filtreler."""
     if not metin:
+        return False
+    # Bot komutları: /akd, /analiz vb.
+    if metin.lstrip().startswith("/"):
         return False
     kelimeler = metin.split()
     if len(kelimeler) < MIN_KELIME_SAYISI:
@@ -196,9 +199,17 @@ def gunluk_duygu_guncelle() -> int:
 
             UNION ALL
 
+            -- Bot tweet filtreleri:
+            --   LENGTH < 20 : /akd asels, GARAN-akd verisi gibi kisa komutlar
+            --   LIKE '/%'   : slash komutlari (LENGTH>=20 olsa bile)
+            --   AKD/Gecersiz: bot echo mesajlari (goruntu istekleri, hata mesajlari)
             SELECT hisse_kodu, tarih, duygu_skoru, 1.0 AS agirlik
             FROM tweetler
             WHERE duygu_skoru IS NOT NULL
+              AND LENGTH(metin) >= 20
+              AND metin NOT LIKE '/%'
+              AND metin NOT LIKE '%AKD Görüntüsü%'
+              AND metin NOT LIKE '%Geçersiz hisse kodu%'
         )
         GROUP BY hisse_kodu, gun
         HAVING sayi >= 1
