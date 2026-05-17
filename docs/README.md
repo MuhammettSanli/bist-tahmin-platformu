@@ -1,6 +1,6 @@
 # BIST Borsa Tahmin Platformu
 
-> Finansal veriler ve BERT duygu analizi birleştirilerek LSTM ile hisse senedi fiyat yönü tahmini yapan hibrit yapay zeka platformu.
+> Finansal veriler ve BERT duygu analizi birleştirilerek XGBoost / LightGBM ile hisse senedi fiyat yönü tahmini yapan hibrit yapay zeka platformu.
 
 ---
 
@@ -8,56 +8,62 @@
 
 Bu platform, Borsa İstanbul (BIST100) hisselerinin **bir sonraki günkü fiyat yönünü** (Yükseliş / Düşüş) tahmin eder. Tahmin iki ayrı veri akışını birleştirir:
 
-- **Finansal veri** — geçmiş fiyat, hacim ve teknik göstergeler (RSI, SMA, MACD)
-- **Duygu verisi** — KAP bildirimleri, finans haberleri ve Twitter/X tweetlerinden BERT ile üretilen günlük duygu skoru
+- **Finansal veri** — geçmiş fiyat, hacim ve teknik göstergeler (RSI, SMA, MACD, Bollinger vb.)
+- **Duygu verisi** — KAP bildirimleri, finans haberleri ve Telegram kanallarından BERT ile üretilen günlük duygu skoru
 
-Hibrit yaklaşımın değeri, **Model Karşılaştırma Paneli** üzerinden görsel olarak ölçülür: sadece finansal model ile duygu dahil modelin doğruluk farkı doğrudan gösterilir.
+Hibrit yaklaşımın değeri, **Model Karşılaştırma Paneli** üzerinden görsel olarak ölçülür: sadece finansal model ile duygu dahil modelin walk-forward doğruluk farkı doğrudan gösterilir.
 
 ---
 
 ## Mimari
 
 ```
-┌─────────────────────────────────────────────────────────────┐
-│                      Dış Veri Kaynakları                    │
-│  Yahoo Finance    KAP (kap.org.tr)    Twitter/X             │
-└────────┬──────────────────┬───────────────┬─────────────────┘
-         │                  │               │
-         ▼                  ▼               ▼
-  veri_cekici.py    haber_toplayici.py  tweet_toplayici.py
-  (OHLCV)          (BeautifulSoup)     (twscrape + BERT)
-         │                  │               │
-         └──────────────────┴───────────────┘
-                            │
-                            ▼
-                       borsa.db (SQLite)
-               ┌───────────────────────────┐
-               │  hisseler                 │
-               │  gunluk_fiyatlar          │
-               │  haberler                 │
-               │  tweetler                 │
-               │  gunluk_duygu  ◄──────────┼── duygu_analizi.py
-               └───────────────────────────┘   (BERT toplu skorlama)
-                            │
-                            ▼
-                     model_egitimi.py
-              ┌─────────────────────────────┐
-              │  Model A: Sadece Finansal   │ → accuracy, F1
-              │  Model B: Finansal + Duygu  │ → accuracy, F1
-              └─────────────────────────────┘
-                            │
-                     models/*.keras
-                     models/*_metriks.json
-                            │
-                            ▼
-                         app.py (Flask)
-                            │
-                     ┌──────┴──────┐
-                     │  API (JSON) │
-                     └──────┬──────┘
-                            │
-                    templates/index.html
-                    (Plotly.js — candlestick)
+┌─────────────────────────────────────────────────────────────────┐
+│                        Dış Veri Kaynakları                      │
+│  Yahoo Finance   KAP (pykap)   Google News   Telegram Kanalları │
+└────────┬─────────────┬──────────────┬───────────────┬───────────┘
+         │             │              │               │
+         ▼             ▼              ▼               ▼
+  veri_cekici.py  kap_toplayici  haber_toplayici  telegram_toplayici
+  (OHLCV+Makro)   (Bildirimler)  (RSS + Scraping) (Telethon)
+         │             │              │               │
+         └─────────────┴──────────────┴───────────────┘
+                                 │
+                                 ▼
+                            borsa.db (SQLite)
+                  ┌────────────────────────────────┐
+                  │  gunluk_fiyatlar               │
+                  │  makro_veriler                 │
+                  │  haberler                      │
+                  │  tweetler                      │
+                  │  gunluk_duygu  ◄───────────────┼── duygu_analizi.py
+                  └────────────────────────────────┘   (BERT toplu skorlama)
+                                 │
+                                 ▼
+                          features.py
+                    (Ortak özellik mühendisliği)
+                                 │
+                                 ▼
+                         model_egitimi.py
+               ┌──────────────────────────────────┐
+               │  Model A: Sadece Finansal         │ → WF accuracy, F1
+               │  Model B: Finansal + Duygu (Hibrit)│ → WF accuracy, F1
+               │  Seçim: WF'de ≥%1 iyileşme varsa │
+               │         hibrit, yoksa finansal    │
+               └──────────────────────────────────┘
+                                 │
+                          models/*.pkl
+                          models/*_metriks.json
+                                 │
+                                 ▼
+                             app.py (Flask)
+                                 │
+                          ┌──────┴──────┐
+                          │  API (JSON) │
+                          └──────┬──────┘
+                                 │
+                         templates/index.html
+                         (Plotly.js — candlestick)
 ```
 
 ---
@@ -66,15 +72,17 @@ Hibrit yaklaşımın değeri, **Model Karşılaştırma Paneli** üzerinden gör
 
 | Katman | Teknoloji | Amaç |
 |---|---|---|
-| Veri Toplama | `yfinance` | BIST OHLCV verisi (5 yıl) |
-| Veri Toplama | `BeautifulSoup` + `requests` | KAP bildirimleri, finans haberleri |
-| Veri Toplama | `twscrape` | Twitter/X tweet toplama |
+| Veri Toplama | `yfinance` | BIST OHLCV + makro verisi (5 yıl) |
+| Veri Toplama | `BeautifulSoup`, `cloudscraper` | Haber siteleri, forum scraping |
+| Veri Toplama | `Telethon` | Telegram kanal mesajları |
+| Veri Toplama | `pykap` | KAP resmi bildirimleri |
 | NLP | `transformers` — `savasy/bert-base-turkish-sentiment-cased` | Türkçe duygu analizi |
 | Veritabanı | `SQLite` | Yerel, hafif, geliştirme dostu |
-| ML Modeli | `TensorFlow / Keras` — LSTM | Zaman serisi sınıflandırma |
-| Özellik Mühendisliği | `pandas_ta` | RSI, SMA_20, MACD |
-| Backend | `Flask` | REST API |
-| Frontend | `Plotly.js` | Candlestick grafik, zoom/pan |
+| ML Modeli | `XGBoost`, `LightGBM` | İkili sınıflandırma (Yükseliş/Düşüş) |
+| Validasyon | Walk-Forward (3 katlı temporal) | Veri sızıntısı olmayan test |
+| Özellik Mühendisliği | `pandas_ta` | RSI, SMA, MACD, Bollinger, ATR vb. |
+| Backend | `Flask`, `APScheduler` | REST API, günlük pipeline |
+| Frontend | `Plotly.js` | Candlestick grafik, duygu skoru |
 
 ---
 
@@ -98,23 +106,96 @@ Hibrit yaklaşımın değeri, **Model Karşılaştırma Paneli** üzerinden gör
 ### Tahmin Hedefi
 
 - **Sınıflandırma:** Yükseliş (`1`) / Düşüş (`0`)
-- **Pencere:** Son 14 günlük veri → yarının yönü
-- **Finansal veri:** 2020'den bugüne (Yahoo Finance)
-- **Tweet verisi:** 2024-01-01'den bugüne
+- **Eşik:** ±%0.5 veya ±%1.0 (hisse bazlı optimize edilir)
+- **Finansal veri:** 2021'den bugüne (Yahoo Finance)
+- **Duygu verisi:** 2022'den bugüne (haber + Telegram)
+
+---
+
+## Model Mimarisi
+
+### Özellik Grupları
+
+**Finansal özellikler (her hisse):**
+RSI(14), SMA(20), SMA(50), MACD, Bollinger Bantları, ATR, Stokastik %K, ROC, Hacim Oranı, Yüksek-Düşük Farkı
+
+**Makro özellikler:**
+BIST100 getirisi, USD/TRY getirisi, Brent petrol, Altın, EUR/TRY
+
+**Hisse bazlı ek makro (sektöre özgü):**
+- EREGL: HRC çelik + demir cevheri getirisi
+- PETKM: Doğalgaz + petrokimya sektör proxy
+- KCHOL: İştirak hisse getirileri (TUPRS, FROTO, TOASO, YKBNK)
+- GARAN/SAHOL: TCMB faiz oranı ve MPC karar değişimi
+
+**Duygu özellikleri (hibrit modelde ek olarak):**
+Tweet duygu skoru, haber duygu skoru, 7 günlük momentum, kaynak sayısı, kaynak konsensus, standart sapma
+
+**Lag özellikleri:** 1, 2, 3, 5, 10 günlük gecikmeler
+
+### Model Seçim Kriteri
+
+Her hisse için finansal ve hibrit model ayrı eğitilir. Hibrit model walk-forward doğruluğu finansal modeli ≥%1 geçiyorsa hibrit seçilir; aksi hâlde finansal model üretimde kullanılır.
+
+---
+
+## Validasyon Metodolojisi
+
+```
+Walk-Forward (Temporal Cross-Validation):
+
+Kat 1: Eğitim 2021-2023 → Test 2023H2
+Kat 2: Eğitim 2021-2024 → Test 2024H2
+Kat 3: Eğitim 2021-2025 → Test 2025H2+
+
+WF Doğruluk = 3 katın ortalaması
+
+HoldOut: Ekim 2025 → Nisan 2026 (bağımsız test seti)
+```
+
+---
+
+## Duygu Analizi Pipeline
+
+```
+Ham metin (haber / tweet)
+        │
+        ▼
+metni_temizle()  ←── URL, mention, özel karakter temizleme
+        │
+        ▼
+metin_kaliteli_mi()  ←── Min 3 kelime, slash komut filtresi
+        │
+        ▼
+BERT (savasy/bert-base-turkish-sentiment-cased)
+        │
+        ▼
+Skor: [-1.0, +1.0]
+        │
+        ▼
+gunluk_duygu  ←── Haberler ×2 + Tweetler ×1 ağırlıklı ortalama
+```
+
+**Gürültü filtreleri (features.py):**
+- INVESTING_FORUM: Echo effect filtresi (önceki gün fiyatını yansıtır)
+- EKSISOZLUK: Genel hisseler için filtrelenir (EREGL istisnası)
+- KAP Faaliyet Raporu: Şablon yasal dil filtresi (ASELS istisnası)
+- GNEWS Teknik Analiz: Mynet Finans şablon yazıları filtresi
+- Bot tweet filtresi: Kısa mesajlar, slash komutları, bot echo'ları
 
 ---
 
 ## Veritabanı Şeması
 
 ```
-hisseler          → hisse_kodu (PK), sirket_adi
-gunluk_fiyatlar   → hisse_kodu, tarih, acilis, kapanis, yuksek, dusuk, hacim
-haberler          → hisse_kodu, tarih, baslik, metin, kaynak, duygu_skoru
-tweetler          → tweet_id (UNIQUE), hisse_kodu, tarih, metin, duygu_skoru
-gunluk_duygu      → hisse_kodu, tarih, ortalama_skor, kayit_sayisi
+gunluk_fiyatlar  → hisse_kodu, tarih, acilis, kapanis, yuksek, dusuk, hacim
+makro_veriler    → tarih, bist100, usdtry, petrol, altin, celik_hrc,
+                   demir_cevheri, dogalgaz, petrokimya, tuprs_hisse,
+                   froto, toaso, ykbnk, eurtry, tcmb_faiz
+haberler         → hisse_kodu, tarih, baslik, metin, kaynak, duygu_skoru
+tweetler         → tweet_id (UNIQUE), hisse_kodu, tarih, metin, duygu_skoru
+gunluk_duygu     → hisse_kodu, tarih, ortalama_skor, kayit_sayisi
 ```
-
-`gunluk_duygu` → haberler + tweetlerin günlük ortalaması → LSTM'e giren duygu özelliği
 
 ---
 
@@ -126,8 +207,10 @@ gunluk_duygu      → hisse_kodu, tarih, ortalama_skor, kayit_sayisi
 | `GET /api/hisseler` | 10 hisse listesi |
 | `GET /api/fiyat/<hisse>` | Son 90 günlük OHLCV |
 | `GET /api/duygu/<hisse>` | Son 90 günlük duygu skoru |
-| `GET /api/tahmin/<hisse>` | LSTM tahmini (yön + güven %) |
+| `GET /api/tahmin/<hisse>` | XGBoost/LightGBM tahmini (yön + güven %) |
 | `GET /api/karsilastirma/<hisse>` | Finansal model vs Hibrit model metrikleri |
+| `GET /api/tum_hisseler_ozet` | Tüm hisseler WF + HoldOut doğruluk tablosu |
+| `GET /api/backtest/<hisse>` | Strateji backtest sonuçları |
 
 ---
 
@@ -139,53 +222,26 @@ gunluk_duygu      → hisse_kodu, tarih, ortalama_skor, kayit_sayisi
 pip install -r requirements.txt
 ```
 
-### 2. Veritabanını Başlat
+### 2. Ortam Değişkenlerini Ayarla
+
+```bash
+cp .env.example .env
+# .env dosyasını düzenle
+```
+
+### 3. Veritabanını Başlat
 
 ```bash
 python database.py
 ```
 
-### 3. Finansal Veri İndir
+### 4. Pipeline'ı Çalıştır
 
 ```bash
-python veri_cekici.py
-# → borsa.db/gunluk_fiyatlar dolar (10 hisse × 5 yıl ≈ 12 500 satır)
+python pipeline.py
 ```
 
-### 4. Haber ve KAP Verisi Topla
-
-```bash
-python haber_toplayici.py
-```
-
-### 5. Twitter/X Verisi Topla
-
-```bash
-# İlk kurulum (bir kez)
-echo "kullanici:sifre:email:email_sifresi" > accounts.txt
-python -m twscrape add_accounts accounts.txt
-python -m twscrape login_accounts
-
-# Tweet topla
-python tweet_toplayici.py
-```
-
-### 6. BERT ile Duygu Skoru Hesapla
-
-```bash
-python duygu_analizi.py
-# → haberler ve tweetler skorlanır, gunluk_duygu tablosu güncellenir
-```
-
-### 7. LSTM Modellerini Eğit
-
-```bash
-python model_egitimi.py
-# → her hisse için 2 model: finansal + hibrit
-# → models/<HISSE>_metriks.json karşılaştırma verisi üretilir
-```
-
-### 8. Web Uygulamasını Başlat
+### 5. Web Uygulamasını Başlat
 
 ```bash
 python app.py
@@ -194,42 +250,35 @@ python app.py
 
 ---
 
-## Proje Durumu
-
-| Modül | Durum |
-|---|---|
-| `database.py` | Tamamlandı |
-| `veri_cekici.py` | Tamamlandı |
-| `haber_toplayici.py` | Tamamlandı |
-| `tweet_toplayici.py` | Tamamlandı |
-| `duygu_analizi.py` | Tamamlandı |
-| `model_egitimi.py` | Tamamlandı |
-| `app.py` | Tamamlandı |
-| `templates/index.html` | Tamamlandı |
-| Uçtan uca test | Bekliyor |
-
----
-
 ## Proje Yapısı
 
 ```
-Agents/
-├── database.py              # Adım 1 — DB şeması ve başlangıç verisi
-├── veri_cekici.py           # Adım 2 — yfinance finansal veri
-├── haber_toplayici.py       # Adım 3 — KAP + haber scraping
-├── tweet_toplayici.py       # Adım 4 — twscrape + anında BERT skorlama
-├── duygu_analizi.py         # Adım 5 — toplu BERT + gunluk_duygu güncelle
-├── model_egitimi.py         # Adım 6 — LSTM (finansal vs hibrit)
-├── app.py                   # Adım 7 — Flask REST API
-├── templates/
-│   └── index.html           # Adım 8 — Plotly.js web arayüzü
-├── static/
-│   ├── style.css
-│   └── script.js
-├── models/                  # Eğitilen modeller (.keras, .pkl, _metriks.json)
-├── requirements.txt
-├── .gitignore
-└── borsa.db                 # Yerel SQLite (git'e dahil değil)
+├── app.py                    # Flask API
+├── database.py               # SQLite şeması
+├── features.py               # Ortak özellik mühendisliği
+├── pipeline.py               # Günlük veri + model pipeline
+├── model_utils.py            # Kalibreli model wrapper
+├── ml/
+│   ├── model_egitimi.py      # XGBoost/LightGBM eğitim + walk-forward
+│   ├── duygu_analizi.py      # BERT toplu skorlama
+│   └── backtest.py           # Strateji backtest motoru
+├── collectors/
+│   ├── veri_cekici.py        # yfinance OHLCV + makro
+│   ├── haber_toplayici.py    # Google News RSS + haber siteleri
+│   ├── telegram_toplayici.py # Telethon kanal mesajları
+│   ├── kap_toplayici.py      # KAP bildirimleri (pykap)
+│   ├── eksisozluk_toplayici.py
+│   ├── investing_toplayici.py
+│   ├── mynet_toplayici.py
+│   ├── hissenet_toplayici.py
+│   ├── bigpara_toplayici.py
+│   └── isyatirim_toplayici.py
+├── models/                   # Eğitilen modeller (.pkl, _metriks.json)
+├── data/                     # SQLite veritabanı (borsa.db)
+├── static/                   # CSS + JS
+├── templates/                # HTML şablonları
+├── tests/                    # Birim testleri
+└── .github/workflows/        # GitHub Actions günlük pipeline
 ```
 
 ---
@@ -240,8 +289,11 @@ Agents/
 2. Devlin et al. (2018) — *BERT: Pre-training of Deep Bidirectional Transformers*
 3. Bollen et al. (2011) — *Twitter mood predicts the stock market*
 4. Araci (2019) — *FinBERT: Financial sentiment analysis with pre-trained language models*
-5. Jiang & Zeng (2023) — *Predicting Stock Prices with FinBERT-LSTM*
+5. Chen & Guestrin (2016) — *XGBoost: A Scalable Tree Boosting System*
+6. Ke et al. (2017) — *LightGBM: A Highly Efficient Gradient Boosting Decision Tree*
 
 ---
 
-*Süleyman Demirel Üniversitesi — Bilgisayar Mühendisliği — Tasarım-I/II Dersi*
+*Süleyman Demirel Üniversitesi — Bilgisayar Mühendisliği — Bitirme Tezi*
+
+> **Not:** Bu platform yatırım tavsiyesi değildir. Araştırma ve eğitim amaçlıdır.
