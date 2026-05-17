@@ -21,7 +21,7 @@ try:
     import pykap
 except ImportError:
     print("HATA: pykap kurulu degil. Kurmak icin: pip install pykap")
-    sys.exit(1)
+    _sys.exit(1)
 
 # ─── Ayarlar ─────────────────────────────────────────────────────────────────
 
