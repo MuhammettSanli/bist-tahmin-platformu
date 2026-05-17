@@ -165,8 +165,7 @@ def ozellikler_hesapla(hisse_kodu: str, gun_sayisi: int = None) -> pd.DataFrame:
     makro_df = pd.read_sql_query(
         "SELECT tarih, bist100, usdtry, petrol, altin, "
         "celik_hrc, demir_cevheri, dogalgaz, petrokimya, "
-        "kerosen, benzin, eurusd, bugday, "
-        "tuprs_hisse, froto, toaso, ykbnk, akbnk, enery, "
+        "tuprs_hisse, froto, toaso, ykbnk, "
         "tcmb_faiz FROM makro_veriler ORDER BY tarih",
         conn
     )
@@ -207,8 +206,7 @@ def ozellikler_hesapla(hisse_kodu: str, gun_sayisi: int = None) -> pd.DataFrame:
         _tum_makro = [
             "bist100", "usdtry", "petrol", "altin",
             "celik_hrc", "demir_cevheri", "dogalgaz", "petrokimya",
-            "kerosen", "benzin", "eurusd", "bugday",
-            "tuprs_hisse", "froto", "toaso", "ykbnk", "akbnk", "enery",
+            "tuprs_hisse", "froto", "toaso", "ykbnk",
         ]
         for col in _tum_makro:
             if col in makro_df.columns:

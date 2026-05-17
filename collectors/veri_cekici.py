@@ -115,18 +115,15 @@ MAKRO_SEMBOLLER = {
     "demir_cevheri": "TIO=F",     # Demir Cevheri (EREGL girdi maliyeti)
     "dogalgaz":      "NG=F",      # Dogal Gaz (PETKM/SISE uretim girdisi)
     "petrokimya":    "LYB",       # LyondellBasell (PETKM sektor proxy)
-    "kerosen":       "HO=F",      # Isitma yagi = jet yakiti proxy (THYAO/TUPRS)
-    "benzin":        "RB=F",      # RBOB benzin = rafineri urun marji (TUPRS crack spread)
-    "eurusd":        "EURUSD=X",  # EUR/USD kuru (SISE ihracat geliri EUR cinsinden)
-    "bugday":        "ZW=F",      # Bugday vadeli islemi (BIMAS gida hammadde maliyeti)
     # KCHOL iştirakleri — holding fiyatı iştiraklere gecikmeli yansır
     "tuprs_hisse":   "TUPRS.IS",  # Tüpraş (KCHOL ana iştirak)
     "froto":         "FROTO.IS",  # Ford Otosan (KCHOL)
     "toaso":         "TOASO.IS",  # Tofaş (KCHOL)
     "ykbnk":         "YKBNK.IS",  # Yapı Kredi (KCHOL)
-    # SAHOL iştirakleri
-    "akbnk":         "AKBNK.IS",  # Akbank (SAHOL ana iştirak)
-    "enery":         "ENERY.IS",  # Enerjisa Enerji (SAHOL)
+    # Denendi ama kaldırıldı (zararlı/etkisiz):
+    # kerosen HO=F → THYAO -5.5%, benzin RB=F → TUPRS overfitting
+    # eurusd EURUSD=X → SISE etkisiz, bugday ZW=F → BIMAS etkisiz
+    # akbnk AKBNK.IS → SAHOL -1.3%, enery ENERY.IS → SAHOL etkisiz
 }
 
 
@@ -175,15 +172,13 @@ def makro_veritabanina_kaydet(df: pd.DataFrame) -> int:
                 """INSERT OR REPLACE INTO makro_veriler
                    (tarih, bist100, usdtry, petrol, altin,
                     celik_hrc, demir_cevheri, dogalgaz, petrokimya,
-                    kerosen, benzin, eurusd, bugday,
-                    tuprs_hisse, froto, toaso, ykbnk, akbnk, enery)
-                   VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
+                    tuprs_hisse, froto, toaso, ykbnk)
+                   VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
                 (
                     str(row["tarih"]),
                     f("bist100"), f("usdtry"), f("petrol"), f("altin"),
                     f("celik_hrc"), f("demir_cevheri"), f("dogalgaz"), f("petrokimya"),
-                    f("kerosen"), f("benzin"), f("eurusd"), f("bugday"),
-                    f("tuprs_hisse"), f("froto"), f("toaso"), f("ykbnk"), f("akbnk"), f("enery"),
+                    f("tuprs_hisse"), f("froto"), f("toaso"), f("ykbnk"),
                 )
             )
             if c.rowcount > 0:
