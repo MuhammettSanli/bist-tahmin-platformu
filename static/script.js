@@ -305,23 +305,27 @@ function karsilastirmaGuncelle(data) {
       ? `%${(hibWf.wf_acc_ort * 100).toFixed(1)} ±${(hibWf.wf_acc_std * 100).toFixed(1)}`
       : "—";
 
-  // İyileşme bandı
-  const iyilesme = ((hib.accuracy - fin.accuracy) * 100).toFixed(1);
+  // İyileşme bandı — model seçimi WF'ye göre yapıldığı için karşılaştırma da WF kullanır
   const band = document.getElementById("iyilesmeBand");
   const secilenAd = secilenTip === "hibrit" ? "Hibrit" : "Finansal";
 
-  if (hib.accuracy > fin.accuracy) {
-    band.innerHTML = `Duygu analizi modeli doğruluğu <strong>+%${iyilesme}</strong> artırdı — ${secilenAd} model seçildi`;
-    band.style.background  = "#1a3a1f";
-    band.style.borderColor = "#3fb950";
-    band.style.color       = "#3fb950";
-    band.classList.remove("gizli");
-  } else if (fin.accuracy > hib.accuracy) {
-    band.innerHTML = `Duygu analizi modeli doğruluğu <strong>${iyilesme}%</strong> düşürdü — ${secilenAd} model seçildi`;
-    band.style.background  = "#2d1a1a";
-    band.style.borderColor = "#f85149";
-    band.style.color       = "#f85149";
-    band.classList.remove("gizli");
+  if (finWf.wf_acc_ort != null && hibWf.wf_acc_ort != null) {
+    const wfIyilesme = ((hibWf.wf_acc_ort - finWf.wf_acc_ort) * 100).toFixed(1);
+    if (hibWf.wf_acc_ort > finWf.wf_acc_ort) {
+      band.innerHTML = `Duygu analizi WF doğruluğunu <strong>+%${wfIyilesme}</strong> artırdı — ${secilenAd} model seçildi`;
+      band.style.background  = "#1a3a1f";
+      band.style.borderColor = "#3fb950";
+      band.style.color       = "#3fb950";
+      band.classList.remove("gizli");
+    } else if (finWf.wf_acc_ort > hibWf.wf_acc_ort) {
+      band.innerHTML = `Duygu analizi WF doğruluğunu <strong>${wfIyilesme}%</strong> düşürdü — ${secilenAd} model seçildi`;
+      band.style.background  = "#2d1a1a";
+      band.style.borderColor = "#f85149";
+      band.style.color       = "#f85149";
+      band.classList.remove("gizli");
+    } else {
+      band.classList.add("gizli");
+    }
   } else {
     band.classList.add("gizli");
   }
