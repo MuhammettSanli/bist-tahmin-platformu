@@ -161,11 +161,15 @@ def ozellikler_hesapla(hisse_kodu: str, gun_sayisi: int = None) -> pd.DataFrame:
     }
     _gurultu = _GURULTU_HISSE.get(hisse_kodu, "('INVESTING_FORUM', 'EKSISOZLUK')")
     _kap_filtre = "" if hisse_kodu == "ASELS" else "AND NOT (kaynak = 'KAP' AND baslik LIKE '%Faaliyet Raporu%') "
+    # GNEWS Teknik Analiz: Mynet Finans şablon yazıları → BERT +0.95 sabit skor, gerçek sentiment yok
+    # 661/721 tanesi 2026 tarihli → WF Kat3 ve holdout'ta yapay pozitif bias yaratıyor
+    _ta_filtre = "AND NOT (kaynak IN ('GNEWS','GNEWS2') AND baslik LIKE '%Teknik Analiz%') "
     haber_df = pd.read_sql_query(
         "SELECT DATE(tarih) AS tarih, AVG(duygu_skoru) AS haber_duygu "
         f"FROM haberler WHERE hisse_kodu = ? AND duygu_skoru IS NOT NULL "
         f"AND kaynak NOT IN {_gurultu} "
         f"{_kap_filtre}"
+        f"{_ta_filtre}"
         "GROUP BY DATE(tarih) ORDER BY tarih",
         conn, params=(hisse_kodu,)
     )
@@ -174,6 +178,7 @@ def ozellikler_hesapla(hisse_kodu: str, gun_sayisi: int = None) -> pd.DataFrame:
         f"FROM haberler WHERE hisse_kodu = ? AND duygu_skoru IS NOT NULL "
         f"AND kaynak NOT IN {_gurultu} "
         f"{_kap_filtre}"
+        f"{_ta_filtre}"
         "GROUP BY DATE(tarih), kaynak ORDER BY tarih",
         conn, params=(hisse_kodu,)
     )
