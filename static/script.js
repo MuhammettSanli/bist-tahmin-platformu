@@ -731,10 +731,12 @@ async function tumHisselerOzetYukle() {
     if (!data || !data.length) return;
 
     const satirlar = data.map(h => {
-      const modelRenk = h.model_tipi === "hibrit" ? "badge--hibrit" : "badge--finansal";
-      const algoRenk  = h.algoritma === "LGBM" ? "badge--lgbm" : "badge--xgb";
-      const accRenk   = h.accuracy >= 58 ? "sinyal-ozet__deger--yesil" :
-                        h.accuracy >= 53 ? "" : "sinyal-ozet__deger--kirmizi";
+      const modelRenk   = h.model_tipi === "hibrit" ? "badge--hibrit" : "badge--finansal";
+      const algoRenk    = h.algoritma === "LGBM" ? "badge--lgbm" : "badge--xgb";
+      const wfRenk      = h.accuracy >= 58 ? "sinyal-ozet__deger--yesil" :
+                          h.accuracy >= 53 ? "" : "sinyal-ozet__deger--kirmizi";
+      const holdoutRenk = h.holdout_acc >= 58 ? "sinyal-ozet__deger--yesil" :
+                          h.holdout_acc >= 53 ? "" : "sinyal-ozet__deger--kirmizi";
       return `
         <tr>
           <td><strong>${h.hisse_kodu}</strong></td>
@@ -742,7 +744,8 @@ async function tumHisselerOzetYukle() {
           <td><span class="badge ${modelRenk}">${h.model_tipi}</span></td>
           <td><span class="badge ${algoRenk}">${h.algoritma}</span></td>
           <td><span class="badge badge--esik">${h.esik}</span></td>
-          <td style="font-weight:700" class="${accRenk}">%${h.accuracy}</td>
+          <td style="font-weight:700" class="${wfRenk}">%${h.accuracy}</td>
+          <td style="font-weight:700" class="${holdoutRenk}">%${h.holdout_acc}</td>
           <td style="color:#8b949e">${h.f1_macro}</td>
         </tr>`;
     }).join("");
@@ -756,7 +759,8 @@ async function tumHisselerOzetYukle() {
             <th>Model</th>
             <th>Algoritma</th>
             <th>Eşik</th>
-            <th>Doğruluk</th>
+            <th>WF Doğruluk</th>
+            <th>HoldOut</th>
             <th>F1 Macro</th>
           </tr>
         </thead>

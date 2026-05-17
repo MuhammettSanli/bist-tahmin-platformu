@@ -297,16 +297,18 @@ def tum_hisseler_ozet():
         # JSON key: "sadece_finansal" veya "hibrit"
         json_key = "sadece_finansal" if en_iyi_tip == "finansal" else en_iyi_tip
         m_data = m.get(json_key, {})
-        acc = m_data.get("wf_acc") or m_data.get("accuracy", 0)
-        f1  = m_data.get("f1_macro", 0)
+        wf_acc      = m_data.get("wf_acc") or m_data.get("accuracy", 0)
+        holdout_acc = m_data.get("accuracy", 0)
+        f1          = m_data.get("f1_macro", 0)
         sonuc.append({
-            "hisse_kodu":  hisse_kodu,
-            "sirket_adi":  sirket_adi,
-            "model_tipi":  en_iyi_tip,
-            "algoritma":   en_iyi_algo,
-            "esik":        f"±%{en_iyi_esik * 100:.1f}",
-            "accuracy":    round(acc * 100, 1),
-            "f1_macro":    round(f1, 3),
+            "hisse_kodu":   hisse_kodu,
+            "sirket_adi":   sirket_adi,
+            "model_tipi":   en_iyi_tip,
+            "algoritma":    en_iyi_algo,
+            "esik":         f"±%{en_iyi_esik * 100:.1f}",
+            "accuracy":     round(wf_acc * 100, 1),
+            "holdout_acc":  round(holdout_acc * 100, 1),
+            "f1_macro":     round(f1, 3),
         })
     sonuc.sort(key=lambda x: -x["accuracy"])
     return jsonify(sonuc)
