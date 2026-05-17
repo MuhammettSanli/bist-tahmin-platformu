@@ -44,6 +44,7 @@ FINANSAL_OZELLIKLER = [
 HISSE_OZEL_FINANSAL = {
     "EREGL": ["celik_hrc_getiri", "demir_cevheri_getiri"],       # Celik: HRC urun + demir cevheri girdi
     "PETKM": ["dogalgaz_getiri", "petrokimya_getiri"],            # Petrokimya: gaz girdi + sektor proxy
+    # THYAO: eurtry_getiri denendi → finansal modeli -2.8pp bozdu, kaldırıldı
     "KCHOL": ["tuprs_hisse_getiri", "froto_getiri",              # Holding: istirak hisse getirileri
               "toaso_getiri", "ykbnk_getiri"],
     "GARAN": ["tcmb_faiz", "tcmb_faiz_degisim"],               # Banka: faiz seviyesi + MPC kararı etkisi
@@ -185,7 +186,7 @@ def ozellikler_hesapla(hisse_kodu: str, gun_sayisi: int = None) -> pd.DataFrame:
     makro_df = pd.read_sql_query(
         "SELECT tarih, bist100, usdtry, petrol, altin, "
         "celik_hrc, demir_cevheri, dogalgaz, petrokimya, "
-        "tuprs_hisse, froto, toaso, ykbnk, "
+        "tuprs_hisse, froto, toaso, ykbnk, eurtry, "
         "tcmb_faiz FROM makro_veriler ORDER BY tarih",
         conn
     )
@@ -226,7 +227,7 @@ def ozellikler_hesapla(hisse_kodu: str, gun_sayisi: int = None) -> pd.DataFrame:
         _tum_makro = [
             "bist100", "usdtry", "petrol", "altin",
             "celik_hrc", "demir_cevheri", "dogalgaz", "petrokimya",
-            "tuprs_hisse", "froto", "toaso", "ykbnk",
+            "tuprs_hisse", "froto", "toaso", "ykbnk", "eurtry",
         ]
         for col in _tum_makro:
             if col in makro_df.columns:

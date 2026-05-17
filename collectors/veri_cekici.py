@@ -120,6 +120,8 @@ MAKRO_SEMBOLLER = {
     "froto":         "FROTO.IS",  # Ford Otosan (KCHOL)
     "toaso":         "TOASO.IS",  # Tofaş (KCHOL)
     "ykbnk":         "YKBNK.IS",  # Yapı Kredi (KCHOL)
+    # THYAO: Avrupa rotası gelirleri Euro cinsinden → EUR/TRY döviz riski
+    "eurtry":        "EURTRY=X",
     # Denendi ama kaldırıldı (zararlı/etkisiz):
     # kerosen HO=F → THYAO -5.5%, benzin RB=F → TUPRS overfitting
     # eurusd EURUSD=X → SISE etkisiz, bugday ZW=F → BIMAS etkisiz
@@ -172,13 +174,13 @@ def makro_veritabanina_kaydet(df: pd.DataFrame) -> int:
                 """INSERT OR REPLACE INTO makro_veriler
                    (tarih, bist100, usdtry, petrol, altin,
                     celik_hrc, demir_cevheri, dogalgaz, petrokimya,
-                    tuprs_hisse, froto, toaso, ykbnk)
-                   VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
+                    tuprs_hisse, froto, toaso, ykbnk, eurtry)
+                   VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)""",
                 (
                     str(row["tarih"]),
                     f("bist100"), f("usdtry"), f("petrol"), f("altin"),
                     f("celik_hrc"), f("demir_cevheri"), f("dogalgaz"), f("petrokimya"),
-                    f("tuprs_hisse"), f("froto"), f("toaso"), f("ykbnk"),
+                    f("tuprs_hisse"), f("froto"), f("toaso"), f("ykbnk"), f("eurtry"),
                 )
             )
             if c.rowcount > 0:
