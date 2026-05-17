@@ -150,15 +150,24 @@ def ozellikler_hesapla(hisse_kodu: str, gun_sayisi: int = None) -> pd.DataFrame:
         "WHERE hisse_kodu = ? ORDER BY tarih",
         conn, params=(hisse_kodu,)
     )
+    # INVESTING_FORUM: önceki gün fiyatını yansıtıyor (echo effect, korelasyon +0.95)
+    # EKSISOZLUK: borsa jargonu BERT'i yanıltıyor, fiyat korelasyonu -0.037
+    # EREGL istisnası: EKSISOZLUK haber günlerinin %59'u → filtrelemek %54 veri kaybı yaratır
+    _GURULTU_HISSE = {
+        "EREGL": "('INVESTING_FORUM')",
+    }
+    _gurultu = _GURULTU_HISSE.get(hisse_kodu, "('INVESTING_FORUM', 'EKSISOZLUK')")
     haber_df = pd.read_sql_query(
         "SELECT DATE(tarih) AS tarih, AVG(duygu_skoru) AS haber_duygu "
-        "FROM haberler WHERE hisse_kodu = ? AND duygu_skoru IS NOT NULL "
+        f"FROM haberler WHERE hisse_kodu = ? AND duygu_skoru IS NOT NULL "
+        f"AND kaynak NOT IN {_gurultu} "
         "GROUP BY DATE(tarih) ORDER BY tarih",
         conn, params=(hisse_kodu,)
     )
     kaynak_df = pd.read_sql_query(
         "SELECT DATE(tarih) AS tarih, kaynak, AVG(duygu_skoru) AS skor "
-        "FROM haberler WHERE hisse_kodu = ? AND duygu_skoru IS NOT NULL "
+        f"FROM haberler WHERE hisse_kodu = ? AND duygu_skoru IS NOT NULL "
+        f"AND kaynak NOT IN {_gurultu} "
         "GROUP BY DATE(tarih), kaynak ORDER BY tarih",
         conn, params=(hisse_kodu,)
     )

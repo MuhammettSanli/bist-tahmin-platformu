@@ -27,11 +27,17 @@ jobs:
       - name: Bagimliliklar
         run: |
           pip install --upgrade pip
-          pip install yfinance xgboost lightgbm scikit-learn pandas numpy joblib python-dotenv requests
+          pip install yfinance xgboost lightgbm scikit-learn pandas numpy joblib python-dotenv requests beautifulsoup4 transformers torch
           pip install pandas_ta || pip install pandas_ta --no-build-isolation || echo "pandas_ta kurulamadi, devam ediliyor"
 
       - name: Finansal veri guncelle
         run: python collectors/veri_cekici.py
+
+      - name: Haberleri topla
+        run: python collectors/haber_toplayici.py
+
+      - name: Duygu analizi (BERT)
+        run: python ml/duygu_analizi.py
 
       - name: Modelleri yeniden egit
         run: python ml/model_egitimi.py

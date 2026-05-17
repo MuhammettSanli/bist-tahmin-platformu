@@ -224,7 +224,7 @@ def _rss_filtreli_cek(hisse_kodu: str, feed_url: str, kaynak_adi: str,
 
 def ek_rss_cek(hisse_kodu: str) -> dict[str, list]:
     """
-    Hürriyet, Dünya, ParaAnaliz, AA Ekonomi RSS kaynaklarından haber ceker.
+    Hürriyet, Dünya, AA Ekonomi, NTV, Haberturk, Milliyet RSS kaynaklarından haber ceker.
     Her kaynak icin ayri liste dondurur.
     """
     return {
@@ -238,16 +238,26 @@ def ek_rss_cek(hisse_kodu: str) -> dict[str, list]:
             "https://www.dunya.com/rss",
             "Dunya",
         ),
-        "PARAANALIZ": _rss_filtreli_cek(
-            hisse_kodu,
-            "https://www.paraanaliz.com/feed/",
-            "ParaAnaliz",
-        ),
         "AA": _rss_filtreli_cek(
             hisse_kodu,
             "https://www.aa.com.tr/tr/rss/default?cat=ekonomi",
             "AA",
             atom=True,
+        ),
+        "NTV": _rss_filtreli_cek(
+            hisse_kodu,
+            "https://www.ntv.com.tr/ekonomi.rss",
+            "NTV",
+        ),
+        "HABERTURK": _rss_filtreli_cek(
+            hisse_kodu,
+            "https://www.haberturk.com/rss/haber/ekonomi.xml",
+            "Haberturk",
+        ),
+        "MILLIYET": _rss_filtreli_cek(
+            hisse_kodu,
+            "https://www.milliyet.com.tr/rss/rssNew/ekonomi-kategorisi/",
+            "Milliyet",
         ),
     }
 
@@ -414,7 +424,7 @@ def haberleri_kaydet(hisse_kodu: str, haberler: list[dict], kaynak: str) -> int:
 
 def tum_haberleri_topla():
     print("=" * 60)
-    print("Haber Toplama: GNews x2 + Hurriyet + Dunya + ParaAnaliz + AA + KAP")
+    print("Haber Toplama: GNews x2 + KAP + Hurriyet + Dunya + AA + NTV + Haberturk + Milliyet")
     print(f"Hisseler: {CALISTIRILACAK_HISSELER}")
     print("=" * 60)
 
