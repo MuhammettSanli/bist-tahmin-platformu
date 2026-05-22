@@ -79,7 +79,6 @@ def verileri_cek(scraper, hisse_kodu: str, slug: str) -> list[dict]:
     detay_base = f"{BASE_URL}/borsa/hisse-fiyatlari/{slug}-detay"
 
     sayfalar = [
-        (f"{detay_base}/teknik-yorum/",   "teknik_yorum"),
         (f"{detay_base}/hisse-haberleri/", "haber"),
     ]
 
@@ -111,8 +110,8 @@ def verileri_cek(scraper, hisse_kodu: str, slug: str) -> list[dict]:
                     print(f"    teknik_yorum: rowContent650 yok")
 
             elif tur == "haber":
-                # Haber linkleri — /haberdetay/ veya /haber/ içeren linkler
-                haber_links = soup.find_all("a", href=re.compile(r"/haberdetay/|/haberleri/.*haber"))
+                # Haber linkleri — /haberler/ veya /haberdetay/ iceren linkler
+                haber_links = soup.find_all("a", href=re.compile(r"/haberler/|/haberdetay/"))
                 goruldu = set()
                 bulunan = 0
                 for a in haber_links:

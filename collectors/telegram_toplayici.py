@@ -107,6 +107,8 @@ HISSE_KANALLARI = {
     "SAHOL": [
         "saholhisse",         # Dogrulandi
         "kchol_sahol",        # Kchol + Sahol Hisse - 8.353 uye
+        "saholhissesi",       # Sahol Hisse (ANA GRUP) - Dogrulandi
+        "saholhissem",        # Sahol hisse birligi - Dogrulandi
     ],
     "SISE": [
         "sise_hisse",         # Sise Hisse - 5.629 uye
@@ -115,11 +117,12 @@ HISSE_KANALLARI = {
     "PETKM": [
         "petkmhisse",         # Dogrulandi - 2.148 uye
         "petkimanaliz",       # Dogrulandi
+        "petkm_hisse",        # PETKIM HISSE - Dogrulandi
+        "petkmhissem",        # Petkim hisse birligi - Dogrulandi
     ],
 }
 
 # Tum hisseler icin ortak genel Borsa kanallar
-# Tarama sonucu DOGRULANAN kanallar:
 GENEL_KANALLAR = [
     "finansgundem",    # Dogrulandi
     "turkiyeborsasi",  # Dogrulandi
