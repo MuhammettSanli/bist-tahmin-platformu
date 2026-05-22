@@ -6,6 +6,25 @@ Finansal göstergeler ile Türkçe haber ve sosyal medya verilerinden üretilen 
 
 ---
 
+## Ekran Görüntüleri
+
+### Tahmin & Fiyat Grafiği
+![Tahmin ve Mum Grafiği](docs/screenshot_tahmin.png)
+
+### BERT Duygu Skoru Analizi
+![Duygu Skoru Grafiği](docs/screenshot_duygu.png)
+
+### Model Karşılaştırması (Finansal vs Hibrit)
+![Model Karşılaştırması](docs/screenshot_model.png)
+
+### Backtest — Holdout Dönemi (Eki 2025 → Nis 2026)
+![Backtest Performansı](docs/screenshot_backtest.png)
+
+### Tüm Hisseler Model Performansı
+![Model Performans Tablosu](docs/screenshot_performans.png)
+
+---
+
 ## Özellikler
 
 - **İki model karşılaştırması:** Sadece finansal veri kullanan model ile BERT duygu analizini de içeren hibrit modelin doğruluk ve F1 skorları yan yana
