@@ -2,42 +2,42 @@
   "hisse_kodu": "EREGL",
   "en_iyi_esik": 0.01,
   "en_iyi_tip": "finansal",
-  "en_iyi_algo": "lgbm",
+  "en_iyi_algo": "xgb",
   "sadece_finansal": {
-    "accuracy": 0.552941,
-    "wf_acc": 0.544592,
-    "f1": 0.457143,
-    "f1_macro": 0.538571,
+    "accuracy": 0.505882,
+    "wf_acc": 0.501875,
+    "f1": 0.275862,
+    "f1_macro": 0.450431,
     "esik": 0.5,
-    "algoritma": "lgbm",
+    "algoritma": "xgb",
     "wf": {
-      "wf_acc_ort": 0.544592,
-      "wf_f1_ort": 0.491246,
-      "wf_acc_std": 0.022291,
-      "wf_f1_std": 0.105918,
+      "wf_acc_ort": 0.501875,
+      "wf_f1_ort": 0.476551,
+      "wf_acc_std": 0.019085,
+      "wf_f1_std": 0.051137,
       "wf_katlar": 3,
       "wf_detay": [
         {
-          "acc": 0.5647,
-          "f1": 0.5647
+          "acc": 0.4824,
+          "f1": 0.5111
         },
         {
-          "acc": 0.5556,
-          "f1": 0.5676
+          "acc": 0.5278,
+          "f1": 0.5143
         },
         {
-          "acc": 0.5135,
-          "f1": 0.3415
+          "acc": 0.4955,
+          "f1": 0.4043
         }
       ]
     }
   },
   "hibrit": {
-    "accuracy": 0.470588,
+    "accuracy": 0.541176,
     "wf_acc": 0.507006,
-    "f1": 0.210526,
-    "f1_macro": 0.406148,
-    "esik": 0.5,
+    "f1": 0.70229,
+    "f1_macro": 0.351145,
+    "esik": 0.45,
     "algoritma": "lgbm",
     "wf": {
       "wf_acc_ort": 0.507006,
@@ -61,6 +61,6 @@
       ]
     }
   },
-  "iyilesme_acc": -0.082353,
-  "iyilesme_f1": -0.132423
+  "iyilesme_acc": 0.035294,
+  "iyilesme_f1": -0.099286
 }
