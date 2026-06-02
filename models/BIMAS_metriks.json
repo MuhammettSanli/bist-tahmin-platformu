@@ -1,7 +1,7 @@
 {
   "hisse_kodu": "BIMAS",
   "en_iyi_esik": 0.005,
-  "en_iyi_tip": "hibrit",
+  "en_iyi_tip": "finansal",
   "en_iyi_algo": "xgb",
   "sadece_finansal": {
     "accuracy": 0.566372,
@@ -33,34 +33,34 @@
     }
   },
   "hibrit": {
-    "accuracy": 0.548673,
-    "wf_acc": 0.548439,
-    "f1": 0.37037,
-    "f1_macro": 0.509323,
+    "accuracy": 0.584071,
+    "wf_acc": 0.527852,
+    "f1": 0.584071,
+    "f1_macro": 0.584071,
     "esik": 0.5,
-    "algoritma": "xgb",
+    "algoritma": "lgbm",
     "wf": {
-      "wf_acc_ort": 0.548439,
-      "wf_f1_ort": 0.556632,
-      "wf_acc_std": 0.066531,
-      "wf_f1_std": 0.076501,
+      "wf_acc_ort": 0.527852,
+      "wf_f1_ort": 0.574849,
+      "wf_acc_std": 0.01825,
+      "wf_f1_std": 0.099558,
       "wf_katlar": 3,
       "wf_detay": [
         {
-          "acc": 0.4667,
-          "f1": 0.451
+          "acc": 0.5048,
+          "f1": 0.6486
         },
         {
-          "acc": 0.549,
-          "f1": 0.5893
+          "acc": 0.5294,
+          "f1": 0.6418
         },
         {
-          "acc": 0.6296,
-          "f1": 0.6296
+          "acc": 0.5494,
+          "f1": 0.4341
         }
       ]
     }
   },
-  "iyilesme_acc": -0.017699,
-  "iyilesme_f1": -0.050289
+  "iyilesme_acc": 0.017699,
+  "iyilesme_f1": 0.024459
 }
