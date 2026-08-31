@@ -1,7 +1,7 @@
 {
   "hisse_kodu": "ASELS",
   "en_iyi_esik": 0.01,
-  "en_iyi_tip": "finansal",
+  "en_iyi_tip": "hibrit",
   "en_iyi_algo": "xgb",
   "sadece_finansal": {
     "accuracy": 0.515789,
@@ -33,17 +33,17 @@
     }
   },
   "hibrit": {
-    "accuracy": 0.578947,
-    "wf_acc": 0.504832,
-    "f1": 0.545455,
-    "f1_macro": 0.576649,
+    "accuracy": 0.557895,
+    "wf_acc": 0.522376,
+    "f1": 0.511628,
+    "f1_macro": 0.553891,
     "esik": 0.5,
     "algoritma": "xgb",
     "wf": {
-      "wf_acc_ort": 0.504832,
-      "wf_f1_ort": 0.476249,
-      "wf_acc_std": 0.026523,
-      "wf_f1_std": 0.168288,
+      "wf_acc_ort": 0.522376,
+      "wf_f1_ort": 0.492315,
+      "wf_acc_std": 0.050995,
+      "wf_f1_std": 0.177086,
       "wf_katlar": 3,
       "wf_detay": [
         {
@@ -55,12 +55,12 @@
           "f1": 0.6316
         },
         {
-          "acc": 0.5414,
-          "f1": 0.5547
+          "acc": 0.594,
+          "f1": 0.6029
         }
       ]
     }
   },
-  "iyilesme_acc": 0.063158,
-  "iyilesme_f1": 0.063503
+  "iyilesme_acc": 0.042106,
+  "iyilesme_f1": 0.040745
 }
