@@ -1,7 +1,7 @@
 {
   "hisse_kodu": "GARAN",
   "en_iyi_esik": 0.01,
-  "en_iyi_tip": "hibrit",
+  "en_iyi_tip": "finansal",
   "en_iyi_algo": "lgbm",
   "sadece_finansal": {
     "accuracy": 0.506024,
@@ -33,34 +33,34 @@
     }
   },
   "hibrit": {
-    "accuracy": 0.506024,
-    "wf_acc": 0.528103,
-    "f1": 0.672,
-    "f1_macro": 0.336,
-    "esik": 0.3,
+    "accuracy": 0.493976,
+    "wf_acc": 0.517876,
+    "f1": 0.086957,
+    "f1_macro": 0.368478,
+    "esik": 0.55,
     "algoritma": "lgbm",
     "wf": {
-      "wf_acc_ort": 0.528103,
-      "wf_f1_ort": 0.597079,
-      "wf_acc_std": 0.015916,
-      "wf_f1_std": 0.123857,
+      "wf_acc_ort": 0.517876,
+      "wf_f1_ort": 0.55553,
+      "wf_acc_std": 0.010278,
+      "wf_f1_std": 0.123894,
       "wf_katlar": 3,
       "wf_detay": [
         {
-          "acc": 0.5402,
-          "f1": 0.7015
+          "acc": 0.5172,
+          "f1": 0.6111
         },
         {
           "acc": 0.5056,
-          "f1": 0.6667
+          "f1": 0.6716
         },
         {
-          "acc": 0.5385,
-          "f1": 0.4231
+          "acc": 0.5308,
+          "f1": 0.3838
         }
       ]
     }
   },
-  "iyilesme_acc": 0.0,
-  "iyilesme_f1": 0.0
+  "iyilesme_acc": -0.012048,
+  "iyilesme_f1": 0.032478
 }
