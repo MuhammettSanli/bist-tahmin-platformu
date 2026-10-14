@@ -1,7 +1,7 @@
 {
   "hisse_kodu": "GARAN",
   "en_iyi_esik": 0.01,
-  "en_iyi_tip": "finansal",
+  "en_iyi_tip": "hibrit",
   "en_iyi_algo": "lgbm",
   "sadece_finansal": {
     "accuracy": 0.506024,
@@ -34,16 +34,16 @@
   },
   "hibrit": {
     "accuracy": 0.46988,
-    "wf_acc": 0.521678,
+    "wf_acc": 0.537063,
     "f1": 0.185185,
     "f1_macro": 0.396164,
     "esik": 0.55,
     "algoritma": "lgbm",
     "wf": {
-      "wf_acc_ort": 0.521678,
-      "wf_f1_ort": 0.441979,
-      "wf_acc_std": 0.021263,
-      "wf_f1_std": 0.184651,
+      "wf_acc_ort": 0.537063,
+      "wf_f1_ort": 0.526384,
+      "wf_acc_std": 0.022252,
+      "wf_f1_std": 0.103874,
       "wf_katlar": 3,
       "wf_detay": [
         {
@@ -55,8 +55,8 @@
           "f1": 0.6716
         },
         {
-          "acc": 0.5077,
-          "f1": 0.2195
+          "acc": 0.5538,
+          "f1": 0.4727
         }
       ]
     }
