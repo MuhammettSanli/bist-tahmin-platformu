@@ -1,66 +1,66 @@
 {
   "hisse_kodu": "SAHOL",
-  "en_iyi_esik": 0.005,
-  "en_iyi_tip": "hibrit",
+  "en_iyi_esik": 0.01,
+  "en_iyi_tip": "finansal",
   "en_iyi_algo": "xgb",
   "sadece_finansal": {
-    "accuracy": 0.554545,
-    "wf_acc": 0.480879,
-    "f1": 0.631579,
-    "f1_macro": 0.53418,
-    "esik": 0.45,
+    "accuracy": 0.481928,
+    "wf_acc": 0.483055,
+    "f1": 0.31746,
+    "f1_macro": 0.449992,
+    "esik": 0.5,
     "algoritma": "xgb",
     "wf": {
-      "wf_acc_ort": 0.480879,
-      "wf_f1_ort": 0.251852,
-      "wf_acc_std": 0.033321,
-      "wf_f1_std": 0.181746,
+      "wf_acc_ort": 0.483055,
+      "wf_f1_ort": 0.40818,
+      "wf_acc_std": 0.034019,
+      "wf_f1_std": 0.074526,
       "wf_katlar": 3,
       "wf_detay": [
         {
-          "acc": 0.4414,
-          "f1": 0.0
+          "acc": 0.4941,
+          "f1": 0.3175
         },
         {
-          "acc": 0.5229,
-          "f1": 0.4222
+          "acc": 0.5181,
+          "f1": 0.5
         },
         {
-          "acc": 0.4783,
-          "f1": 0.3333
+          "acc": 0.437,
+          "f1": 0.4071
         }
       ]
     }
   },
   "hibrit": {
-    "accuracy": 0.509091,
-    "wf_acc": 0.511745,
-    "f1": 0.590909,
-    "f1_macro": 0.488636,
-    "esik": 0.45,
+    "accuracy": 0.433735,
+    "wf_acc": 0.474928,
+    "f1": 0.447059,
+    "f1_macro": 0.433406,
+    "esik": 0.5,
     "algoritma": "xgb",
     "wf": {
-      "wf_acc_ort": 0.511745,
-      "wf_f1_ort": 0.251104,
-      "wf_acc_std": 0.050788,
-      "wf_f1_std": 0.205477,
+      "wf_acc_ort": 0.474928,
+      "wf_f1_ort": 0.441224,
+      "wf_acc_std": 0.028563,
+      "wf_f1_std": 0.110952,
       "wf_katlar": 3,
       "wf_detay": [
         {
-          "acc": 0.4414,
-          "f1": 0.0
+          "acc": 0.5059,
+          "f1": 0.3636
         },
         {
-          "acc": 0.5596,
-          "f1": 0.25
+          "acc": 0.4819,
+          "f1": 0.5981
         },
         {
-          "acc": 0.5342,
-          "f1": 0.5033
+          "acc": 0.437,
+          "f1": 0.3619
         }
       ]
     }
   },
-  "iyilesme_acc": -0.045454,
-  "iyilesme_f1": -0.045544
+  "iyilesme_acc": -0.048193,
+  "iyilesme_f1": -0.016586
 }
