@@ -1,8 +1,8 @@
 {
   "hisse_kodu": "BIMAS",
   "en_iyi_esik": 0.005,
-  "en_iyi_tip": "finansal",
-  "en_iyi_algo": "lgbm",
+  "en_iyi_tip": "hibrit",
+  "en_iyi_algo": "xgb",
   "sadece_finansal": {
     "accuracy": 0.637168,
     "wf_acc": 0.527863,
@@ -34,16 +34,16 @@
   },
   "hibrit": {
     "accuracy": 0.539823,
-    "wf_acc": 0.537469,
+    "wf_acc": 0.541585,
     "f1": 0.297297,
     "f1_macro": 0.477596,
     "esik": 0.5,
     "algoritma": "xgb",
     "wf": {
-      "wf_acc_ort": 0.537469,
-      "wf_f1_ort": 0.610991,
-      "wf_acc_std": 0.010513,
-      "wf_f1_std": 0.081443,
+      "wf_acc_ort": 0.541585,
+      "wf_f1_ort": 0.615589,
+      "wf_acc_std": 0.015571,
+      "wf_f1_std": 0.074986,
       "wf_katlar": 3,
       "wf_detay": [
         {
@@ -55,8 +55,8 @@
           "f1": 0.6569
         },
         {
-          "acc": 0.5494,
-          "f1": 0.4966
+          "acc": 0.5617,
+          "f1": 0.5103
         }
       ]
     }
